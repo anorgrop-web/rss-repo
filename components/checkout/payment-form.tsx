@@ -103,6 +103,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
     setPaymentError(null)
 
     try {
+      // Step 1: Create the Payment Intent
       const response = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,13 +118,21 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
         return
       }
 
+      const { error: pmError, paymentMethod: pixPaymentMethod } = await stripe.createPaymentMethod({
+        type: "pix",
+        billing_details: buildBillingDetails(),
+      })
+
+      if (pmError) {
+        setPaymentError(pmError.message || "Erro ao criar método de pagamento")
+        setIsProcessing(false)
+        return
+      }
+
       const { error: confirmError } = await stripe.confirmPayment({
         clientSecret,
         confirmParams: {
-          payment_method_data: {
-            type: "pix",
-            billing_details: buildBillingDetails(),
-          },
+          payment_method: pixPaymentMethod.id,
           return_url: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/success`,
         },
         redirect: "if_required",
