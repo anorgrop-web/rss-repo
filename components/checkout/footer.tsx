@@ -1,16 +1,31 @@
 import Image from "next/image"
 
 const paymentMethods = [
-  { name: "Mastercard", color: "#EB001B" },
-  { name: "Visa", color: "#1A1F71" },
-  { name: "Amex", color: "#006FCF" },
-  { name: "Diners", color: "#0079BE" },
-  { name: "Discover", color: "#FF6000" },
-  { name: "Elo", color: "#FFCB05" },
-  { name: "Aura", color: "#ED1C24" },
-  { name: "Hipercard", color: "#B3131B" },
-  { name: "Pix", color: "#32BCAD" },
-  { name: "Boleto", color: "#000000" },
+  {
+    name: "Mastercard",
+    color: "#EB001B",
+    logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-mastercard.svg",
+  },
+  {
+    name: "Visa",
+    color: "#1A1F71",
+    logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-visa.svg",
+  },
+  {
+    name: "Amex",
+    color: "#006FCF",
+    logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/amex.Csr7hRoy.svg",
+  },
+  {
+    name: "Discover",
+    color: "#FF6000",
+    logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-discover.svg",
+  },
+  {
+    name: "Pix",
+    color: "#32BCAD",
+    logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-pix.svg",
+  },
 ]
 
 export function Footer() {
@@ -20,20 +35,17 @@ export function Footer() {
         {/* Payment Methods */}
         <div className="text-center mb-6">
           <p className="text-sm text-gray-500 mb-4">Formas de pagamento</p>
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-4">
             {paymentMethods.map((method, index) => (
-              <div
+              <Image
                 key={index}
-                className="h-8 w-12 rounded border border-gray-200 bg-white flex items-center justify-center"
-              >
-                <Image
-                  src={`/.jpg?height=24&width=36&query=${method.name} payment logo`}
-                  alt={method.name}
-                  width={36}
-                  height={24}
-                  className="h-5 w-auto object-contain"
-                />
-              </div>
+                src={method.logo || "/placeholder.svg"}
+                alt={method.name}
+                width={40}
+                height={28}
+                className="h-7 w-auto object-contain"
+                unoptimized
+              />
             ))}
           </div>
         </div>

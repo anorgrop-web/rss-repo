@@ -4,13 +4,24 @@ import { useState } from "react"
 import { Minus, Plus, Trash2 } from "lucide-react"
 import Image from "next/image"
 
-export function OrderSummary() {
+const SHIPPING_COSTS: Record<string, number> = {
+  pac: 0,
+  jadlog: 14.98,
+  sedex: 24.98,
+}
+
+interface OrderSummaryProps {
+  selectedShipping: string | null
+}
+
+export function OrderSummary({ selectedShipping }: OrderSummaryProps) {
   const [quantity, setQuantity] = useState(1)
 
   const productPrice = 89.87
   const subtotal = productPrice * quantity
   const discount = 0
-  const total = subtotal - discount
+  const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] : 0
+  const total = subtotal - discount + shippingCost
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
@@ -66,6 +77,16 @@ export function OrderSummary() {
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Produtos</span>
           <span className="text-gray-900">R$ {subtotal.toFixed(2).replace(".", ",")}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Frete</span>
+          <span className={shippingCost === 0 && selectedShipping ? "text-green-600" : "text-gray-900"}>
+            {selectedShipping
+              ? shippingCost === 0
+                ? "Grátis"
+                : `R$ ${shippingCost.toFixed(2).replace(".", ",")}`
+              : "—"}
+          </span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Descontos</span>

@@ -1,22 +1,23 @@
 "use client"
 
-import { useState } from "react"
-import { Shield, FileText, MapPin, Star } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Star } from "lucide-react"
+import Image from "next/image"
 
 const badges = [
   {
-    icon: Shield,
+    image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/dadosseguros.png",
     title: "Dados seguros",
     description:
       "Seus dados estão 100% seguros, não compartilhamos e usamos somente para identificação de envio e notas fiscais.",
   },
   {
-    icon: FileText,
+    image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/notasfiscais.png",
     title: "Notas fiscais",
     description: "Emitimos sua nota fiscal e enviamos para o seu e-mail.",
   },
   {
-    icon: MapPin,
+    image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/codigorastreamento.png",
     title: "Código de rastreamento",
     description: "Receba seu código de rastreamento no seu celular através do WhatsApp e pelo e-mail.",
   },
@@ -25,13 +26,26 @@ const badges = [
 export function TrustBadges() {
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const nextSlide = () => {
-    setActiveIndex((prev) => (prev + 1) % badges.length)
+  const renderBadgeIcon = (badge: (typeof badges)[number]) => {
+    return (
+      <Image
+        src={badge.image || "/placeholder.svg"}
+        alt={badge.title}
+        width={48}
+        height={48}
+        className="h-12 w-12 object-contain"
+        unoptimized
+      />
+    )
   }
 
-  const prevSlide = () => {
-    setActiveIndex((prev) => (prev - 1 + badges.length) % badges.length)
-  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % badges.length)
+    }, 4000) // 4 seconds per slide
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <>
@@ -40,9 +54,7 @@ export function TrustBadges() {
         {badges.map((badge, index) => (
           <div key={index} className="bg-white rounded-lg p-4 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-50 flex-shrink-0">
-                <badge.icon className="h-6 w-6 text-amber-600" />
-              </div>
+              <div className="flex-shrink-0">{renderBadgeIcon(badge)}</div>
               <div className="flex-1">
                 <div className="flex items-center gap-1 mb-1">
                   {[...Array(5)].map((_, i) => (
@@ -59,23 +71,25 @@ export function TrustBadges() {
 
       {/* Mobile View - Carousel */}
       <div className="lg:hidden bg-white rounded-lg p-4 shadow-sm">
-        <div className="relative">
-          <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-50 flex-shrink-0">
-              {(() => {
-                const Icon = badges[activeIndex].icon
-                return <Icon className="h-6 w-6 text-amber-600" />
-              })()}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-1 mb-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
-                ))}
+        <div className="relative overflow-hidden">
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          >
+            {badges.map((badge, index) => (
+              <div key={index} className="flex items-start gap-3 min-w-full">
+                <div className="flex-shrink-0">{renderBadgeIcon(badge)}</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-1 mb-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900">{badge.title}</h3>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{badge.description}</p>
+                </div>
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">{badges[activeIndex].title}</h3>
-              <p className="text-xs text-gray-500 mt-1 leading-relaxed">{badges[activeIndex].description}</p>
-            </div>
+            ))}
           </div>
         </div>
 
