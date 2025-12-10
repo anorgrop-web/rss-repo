@@ -31,7 +31,7 @@ export function OrderSummary({ selectedShipping }: OrderSummaryProps) {
       <div className="flex gap-3 pb-4 border-b border-gray-100">
         <div className="h-16 w-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
           <Image
-            src="https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/Kit%20de%20T%C3%A1buas%20de%20Corte%20%281%29.png"
+            src="https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/Kit%20de%20T%C3%A1buas%20de%20Corte%20%282%29.png"
             alt="Tábua de Titânio Katuchef"
             width={64}
             height={64}
