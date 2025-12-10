@@ -12,12 +12,24 @@ const SHIPPING_COSTS: Record<string, number> = {
 
 interface OrderSummaryProps {
   selectedShipping: string | null
+  productTitle?: string
+  productImage?: string
+  productPrice?: number
 }
 
-export function OrderSummary({ selectedShipping }: OrderSummaryProps) {
+const DEFAULT_PRODUCT_TITLE = "Tábua de Titânio Katuchef - Kit Completo 3 tamanhos"
+const DEFAULT_PRODUCT_IMAGE =
+  "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/Kit%20de%20T%C3%A1buas%20de%20Corte%20%282%29.png"
+const DEFAULT_PRODUCT_PRICE = 89.87
+
+export function OrderSummary({
+  selectedShipping,
+  productTitle = DEFAULT_PRODUCT_TITLE,
+  productImage = DEFAULT_PRODUCT_IMAGE,
+  productPrice = DEFAULT_PRODUCT_PRICE,
+}: OrderSummaryProps) {
   const [quantity, setQuantity] = useState(1)
 
-  const productPrice = 89.87
   const subtotal = productPrice * quantity
   const discount = 0
   const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] : 0
@@ -31,8 +43,8 @@ export function OrderSummary({ selectedShipping }: OrderSummaryProps) {
       <div className="flex gap-3 pb-4 border-b border-gray-100">
         <div className="h-16 w-16 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
           <Image
-            src="https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/Kit%20de%20T%C3%A1buas%20de%20Corte%20%282%29.png"
-            alt="Tábua de Titânio Katuchef"
+            src={productImage || "/placeholder.svg"}
+            alt={productTitle}
             width={64}
             height={64}
             className="h-full w-full object-cover"
@@ -42,10 +54,8 @@ export function OrderSummary({ selectedShipping }: OrderSummaryProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h3 className="text-xs font-medium text-gray-900 leading-tight">
-                Tábua de Titânio Katuchef - Kit Completo 3 tamanhos
-              </h3>
-              <p className="text-[10px] text-gray-500 mt-0.5">Tábua de Titânio Katuchef - Kit Completo 3 tamanhos</p>
+              <h3 className="text-xs font-medium text-gray-900 leading-tight">{productTitle}</h3>
+              <p className="text-[10px] text-gray-500 mt-0.5">{productTitle}</p>
               <p className="text-xs font-semibold text-gray-900 mt-1">R${productPrice.toFixed(2).replace(".", ",")}</p>
             </div>
             <button className="text-gray-400 hover:text-red-500 transition-colors p-1">
