@@ -167,7 +167,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8]">
+    <div className="min-h-screen bg-[#f4f6f8] overflow-x-hidden">
       <HybridTracker
         event="InitiateCheckout"
         data={{
