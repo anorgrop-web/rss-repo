@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { FacebookPixel } from "@/components/facebook-pixel"
+import { GoogleAnalytics } from "@next/third-parties/google"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -44,6 +45,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <FacebookPixel />
         </Suspense>
+        <GoogleAnalytics gaId="G-YKD5QZVEHQ" />
         {children}
         <Analytics />
       </body>

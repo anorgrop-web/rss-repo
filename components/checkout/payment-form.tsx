@@ -8,6 +8,7 @@ import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcEl
 import { useRouter } from "next/navigation"
 import type { StripeCardNumberElementChangeEvent } from "@stripe/stripe-js"
 import type { PersonalInfo, AddressInfo } from "@/app/page"
+import { sendGAEvent } from "@next/third-parties/google"
 
 interface PaymentFormProps {
   visible: boolean
@@ -110,6 +111,12 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
     setIsProcessing(true)
     setPaymentError(null)
 
+    sendGAEvent("event", "add_payment_info", {
+      payment_type: "pix",
+      currency: "BRL",
+      value: totalAmount,
+    })
+
     try {
       if (!personalInfo.nome || !personalInfo.email) {
         setPaymentError("Por favor, preencha todos os dados pessoais antes de continuar")
@@ -182,6 +189,12 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
 
     setIsProcessing(true)
     setPaymentError(null)
+
+    sendGAEvent("event", "add_payment_info", {
+      payment_type: "card",
+      currency: "BRL",
+      value: totalAmount,
+    })
 
     try {
       const response = await fetch("/api/create-payment-intent", {

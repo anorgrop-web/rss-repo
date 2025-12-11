@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import type { AddressInfo } from "@/app/page"
+import { sendGAEvent } from "@next/third-parties/google"
 
 interface ShippingAddressFormProps {
   addressInfo: AddressInfo
@@ -43,6 +44,17 @@ const shippingOptions = [
     logo: "correios",
   },
 ]
+
+const handleShippingSelection = (optionId: string, onShippingChange: (shippingId: string) => void) => {
+  const selectedOption = shippingOptions.find((opt) => opt.id === optionId)
+  if (selectedOption) {
+    sendGAEvent("event", "add_shipping_info", {
+      shipping_tier: selectedOption.name,
+      currency: "BRL",
+    })
+  }
+  onShippingChange(optionId)
+}
 
 export function ShippingAddressForm({
   addressInfo,
@@ -206,7 +218,7 @@ export function ShippingAddressForm({
                         name="shipping"
                         value={option.id}
                         checked={selectedShipping === option.id}
-                        onChange={() => onShippingChange(option.id)}
+                        onChange={() => handleShippingSelection(option.id, onShippingChange)}
                         className="h-4 w-4 text-green-600 focus:ring-green-500"
                       />
                       <div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useRef, useMemo } from "react"
+import { useState, useCallback, useRef, useMemo, useEffect } from "react"
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
 import { Header } from "@/components/checkout/header"
@@ -12,6 +12,7 @@ import { OrderSummary } from "@/components/checkout/order-summary"
 import { TrustBadges } from "@/components/checkout/trust-badges"
 import { Footer } from "@/components/checkout/footer"
 import { HybridTracker } from "@/components/hybrid-tracker"
+import { sendGAEvent } from "@next/third-parties/google"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -150,6 +151,20 @@ export default function Home() {
     const shippingCost = selectedShipping ? shippingCosts[selectedShipping] || 0 : 0
     return productPrice + shippingCost
   }, [selectedShipping])
+
+  useEffect(() => {
+    sendGAEvent("event", "begin_checkout", {
+      currency: "BRL",
+      value: 89.87,
+      items: [
+        {
+          item_name: "Tábua de Titânio Katuchef - Conjunto com 3",
+          item_id: "tabua-conjunto-3",
+          price: 89.87,
+        },
+      ],
+    })
+  }, [])
 
   return (
     <div className="min-h-screen bg-[#f4f6f8]">
