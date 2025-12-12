@@ -5,8 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { Copy, Check, Smartphone, QrCode, CreditCard } from "lucide-react"
 import { Footer } from "@/components/checkout/footer"
+import { HybridTracker } from "@/components/hybrid-tracker"
 
-// Extended footer for PIX page with more payment methods
 const paymentMethods = [
   { name: "Mastercard", logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-mastercard.svg" },
   { name: "Visa", logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-visa.svg" },
@@ -29,7 +29,6 @@ export default function PixPaymentPage() {
   const [isExpired, setIsExpired] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState<string>("")
 
-  // Get PIX data from URL params
   const pixCode = searchParams.get("code") || ""
   const qrCodeUrl = searchParams.get("qr") || ""
   const amount = searchParams.get("amount") || "0"
@@ -44,7 +43,6 @@ export default function PixPaymentPage() {
   const customerState = searchParams.get("state") || ""
   const customerCep = searchParams.get("cep") || ""
 
-  // Format amount for display
   const formattedAmount = Number.parseFloat(amount).toFixed(2).replace(".", ",")
 
   const checkPaymentStatus = useCallback(async () => {
@@ -55,7 +53,6 @@ export default function PixPaymentPage() {
       const data = await response.json()
 
       if (data.paid) {
-        // Redirect to success page with customer data
         const successParams = new URLSearchParams({
           name: customerName,
           email: customerEmail,
@@ -90,13 +87,11 @@ export default function PixPaymentPage() {
 
     const interval = setInterval(checkPaymentStatus, 3000)
 
-    // Initial check
     checkPaymentStatus()
 
     return () => clearInterval(interval)
   }, [paymentIntentId, checkPaymentStatus])
 
-  // Calculate expiration time and countdown
   useEffect(() => {
     if (expiresAt) {
       const expirationTimestamp = Number.parseInt(expiresAt) * 1000
@@ -111,7 +106,6 @@ export default function PixPaymentPage() {
       setExpirationTime(`${hours}:${minutes}`)
       setExpirationDate(`${day}/${month}/${year}`)
 
-      // Update countdown every second
       const countdownInterval = setInterval(() => {
         const now = Date.now()
         const remaining = expirationTimestamp - now
@@ -143,7 +137,15 @@ export default function PixPaymentPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
+      <HybridTracker
+        event="Purchase"
+        data={{
+          value: Number.parseFloat(amount),
+          currency: "BRL",
+          payment_method: "pix",
+        }}
+      />
+
       <header className="bg-white border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-4 py-3">
           <Image
@@ -156,13 +158,10 @@ export default function PixPaymentPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="bg-white rounded-lg p-6 md:p-10">
-          {/* Title */}
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Seu pedido já é quase seu...</h1>
 
-          {/* Expiration Warning */}
           <p className="text-sm md:text-base mb-8">
             <span className="text-yellow-600 font-medium">
               Você tem até {expirationTime} de hoje ({expirationDate})
@@ -174,7 +173,6 @@ export default function PixPaymentPage() {
             </strong>
           </p>
 
-          {/* Expired Warning */}
           {isExpired && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700 font-medium">
@@ -186,9 +184,7 @@ export default function PixPaymentPage() {
             </div>
           )}
 
-          {/* Desktop Layout */}
           <div className="hidden md:grid md:grid-cols-2 gap-8">
-            {/* Left Column - QR Code */}
             <div className="bg-gray-100 rounded-lg p-6 flex flex-col items-center">
               <p className="text-sm font-medium text-gray-700 mb-4">Aponte a câmera do seu celular</p>
 
@@ -210,7 +206,6 @@ export default function PixPaymentPage() {
               <p className="text-base text-gray-600 mb-1">Valor do Pix:</p>
               <p className="text-2xl font-bold text-green-600 mb-4">{formattedAmount}</p>
 
-              {/* Waiting Badge with countdown */}
               <div className="border-2 border-dashed border-yellow-400 rounded-full px-6 py-2 bg-yellow-50">
                 <span className="text-yellow-600 font-medium text-sm">
                   {isExpired ? "PIX Expirado" : `Aguardando Pagamento ... ${timeRemaining}`}
@@ -218,7 +213,6 @@ export default function PixPaymentPage() {
               </div>
             </div>
 
-            {/* Right Column - Instructions */}
             <div>
               <h3 className="font-bold text-gray-900 mb-6">Como pagar o pix:</h3>
 
@@ -247,7 +241,6 @@ export default function PixPaymentPage() {
                 </div>
               </div>
 
-              {/* PIX Code Copy */}
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-gray-100 rounded-lg px-4 py-3">
                   <p className="text-xs text-gray-500 mb-1">Código do Pix:</p>
@@ -271,9 +264,7 @@ export default function PixPaymentPage() {
             </div>
           </div>
 
-          {/* Mobile Layout */}
           <div className="md:hidden">
-            {/* Value and Waiting Badge */}
             <div className="text-center mb-6">
               <p className="text-base text-gray-600 mb-1">Valor do Pix:</p>
               <p className="text-3xl font-bold text-green-600 mb-4">{formattedAmount}</p>
@@ -285,7 +276,6 @@ export default function PixPaymentPage() {
               </div>
             </div>
 
-            {/* PIX Code Box */}
             <div className="bg-gray-100 rounded-lg p-4 mb-4">
               <p className="text-center text-gray-600 mb-2">Código do Pix:</p>
               <p className="text-center text-sm text-gray-700 break-all mb-4">{pixCode}</p>
@@ -309,7 +299,6 @@ export default function PixPaymentPage() {
               </button>
             </div>
 
-            {/* Instructions */}
             <div className="mb-6">
               <h3 className="font-bold text-gray-900 mb-4">Como pagar o pix:</h3>
 
@@ -341,14 +330,12 @@ export default function PixPaymentPage() {
               </div>
             </div>
 
-            {/* Divider */}
             <div className="flex items-center gap-4 my-6">
               <div className="flex-1 h-px bg-gray-300" />
               <span className="text-gray-500 font-medium">OU</span>
               <div className="flex-1 h-px bg-gray-300" />
             </div>
 
-            {/* QR Code Section */}
             <div className="bg-gray-100 rounded-lg p-6 text-center">
               <p className="text-sm font-medium text-gray-700 mb-4">Aponte a câmera do seu celular</p>
 

@@ -21,6 +21,10 @@ export function SuccessTracker({ value, paymentMethod }: SuccessTrackerProps) {
     })
   }, [transactionId, value, paymentMethod])
 
+  if (paymentMethod === "pix") {
+    return null
+  }
+
   return (
     <HybridTracker
       event="Purchase"
