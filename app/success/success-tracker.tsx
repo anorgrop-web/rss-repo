@@ -3,6 +3,7 @@
 import { useEffect, useId } from "react"
 import { HybridTracker } from "@/components/hybrid-tracker"
 import { sendGAEvent } from "@next/third-parties/google"
+import { sendGoogleAdsConversion } from "@/lib/google-ads"
 
 interface SuccessTrackerProps {
   value: number
@@ -18,6 +19,11 @@ export function SuccessTracker({ value, paymentMethod }: SuccessTrackerProps) {
       value: value,
       currency: "BRL",
       payment_type: paymentMethod,
+    })
+
+    sendGoogleAdsConversion({
+      value: value,
+      transaction_id: transactionId,
     })
   }, [transactionId, value, paymentMethod])
 

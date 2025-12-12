@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { FacebookPixel } from "@/components/facebook-pixel"
 import { GoogleAnalytics } from "@next/third-parties/google"
+import { GoogleAdsGtag } from "@/components/google-ads-gtag"
 import Script from "next/script"
 import "./globals.css"
 
@@ -52,6 +53,9 @@ export default function RootLayout({
         `}
       </Script>
       <body className={`font-sans antialiased`}>
+        <Suspense fallback={null}>
+          <GoogleAdsGtag />
+        </Suspense>
         <Suspense fallback={null}>
           <FacebookPixel />
         </Suspense>
