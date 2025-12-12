@@ -139,6 +139,7 @@ export default function PixPaymentPage() {
     <div className="min-h-screen bg-gray-100">
       <HybridTracker
         event="Purchase"
+        eventId={paymentIntentId}
         data={{
           value: Number.parseFloat(amount),
           currency: "BRL",
