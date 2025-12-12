@@ -6,6 +6,7 @@ import Image from "next/image"
 import { Copy, Check, Smartphone, QrCode, CreditCard } from "lucide-react"
 import { Footer } from "@/components/checkout/footer"
 import { HybridTracker } from "@/components/hybrid-tracker"
+import { sendGoogleAdsConversion } from "@/lib/google-ads"
 
 const paymentMethods = [
   { name: "Mastercard", logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-mastercard.svg" },
@@ -44,6 +45,15 @@ export default function PixPaymentPage() {
   const customerCep = searchParams.get("cep") || ""
 
   const formattedAmount = Number.parseFloat(amount).toFixed(2).replace(".", ",")
+
+  useEffect(() => {
+    if (paymentIntentId && amount) {
+      sendGoogleAdsConversion({
+        value: Number.parseFloat(amount),
+        transaction_id: paymentIntentId,
+      })
+    }
+  }, [paymentIntentId, amount])
 
   const checkPaymentStatus = useCallback(async () => {
     if (!paymentIntentId) return

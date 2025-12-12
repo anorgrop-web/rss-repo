@@ -21,10 +21,13 @@ export function SuccessTracker({ value, paymentMethod }: SuccessTrackerProps) {
       payment_type: paymentMethod,
     })
 
-    sendGoogleAdsConversion({
-      value: value,
-      transaction_id: transactionId,
-    })
+    // PIX conversions are already fired on the PIX payment page
+    if (paymentMethod !== "pix") {
+      sendGoogleAdsConversion({
+        value: value,
+        transaction_id: transactionId,
+      })
+    }
   }, [transactionId, value, paymentMethod])
 
   if (paymentMethod === "pix") {
