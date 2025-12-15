@@ -45,13 +45,22 @@ async function getOrCreateCustomer(
 
 async function addTaxIdToCustomer(customerId: string, cpf: string): Promise<void> {
   try {
+    const existingTaxIds = await stripe.customers.listTaxIds(customerId, { limit: 100 })
+    const cpfExists = existingTaxIds.data.some((taxId) => taxId.type === "br_cpf" && taxId.value === cpf)
+
+    if (cpfExists) {
+      return // Tax ID already exists, no need to add
+    }
+
     await stripe.customers.createTaxId(customerId, {
       type: "br_cpf",
       value: cpf,
     })
   } catch (error) {
-    // Ignore error if tax ID already exists
-    if (error instanceof Stripe.errors.StripeError && error.code === "tax_id_already_exists") {
+    if (
+      error instanceof Stripe.errors.StripeError &&
+      (error.code === "tax_id_already_exists" || error.code === "resource_already_exists")
+    ) {
       return
     }
     // Log other errors but don't fail the payment
