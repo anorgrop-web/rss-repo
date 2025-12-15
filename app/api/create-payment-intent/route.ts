@@ -5,10 +5,73 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
 })
 
+async function getOrCreateCustomer(
+  email: string,
+  name: string,
+  address?: {
+    street?: string
+    city?: string
+    state?: string
+    cep?: string
+  },
+): Promise<string> {
+  // Check if customer already exists
+  const existingCustomers = await stripe.customers.list({
+    email: email,
+    limit: 1,
+  })
+
+  if (existingCustomers.data.length > 0) {
+    return existingCustomers.data[0].id
+  }
+
+  // Create new customer
+  const customer = await stripe.customers.create({
+    email,
+    name,
+    address: address
+      ? {
+          line1: address.street || "",
+          city: address.city || "",
+          state: address.state || "",
+          postal_code: address.cep?.replace(/\D/g, "") || "",
+          country: "BR",
+        }
+      : undefined,
+  })
+
+  return customer.id
+}
+
+async function addTaxIdToCustomer(customerId: string, cpf: string): Promise<void> {
+  try {
+    await stripe.customers.createTaxId(customerId, {
+      type: "br_cpf",
+      value: cpf,
+    })
+  } catch (error) {
+    // Ignore error if tax ID already exists
+    if (error instanceof Stripe.errors.StripeError && error.code === "tax_id_already_exists") {
+      return
+    }
+    // Log other errors but don't fail the payment
+    console.warn("Warning: Could not add Tax ID to customer:", error)
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { amount, paymentMethodType, billingDetails, customer_name, customer_email, address, products } = body
+    const {
+      amount,
+      paymentMethodType,
+      billingDetails,
+      customer_name,
+      customer_email,
+      customer_cpf,
+      address,
+      products,
+    } = body
 
     const amountInCents = Math.round(amount * 100)
 
@@ -25,6 +88,17 @@ export async function POST(request: Request) {
       metadata.products = JSON.stringify(products)
     }
     metadata.payment_method = paymentMethodType
+
+    let customerId: string | undefined
+    if (customer_email && customer_name) {
+      customerId = await getOrCreateCustomer(customer_email, customer_name, address)
+
+      // Add CPF as Tax ID if provided (from frontend or billingDetails)
+      const cpf = customer_cpf || billingDetails?.tax_id
+      if (cpf && customerId) {
+        await addTaxIdToCustomer(customerId, cpf.replace(/\D/g, ""))
+      }
+    }
 
     if (paymentMethodType === "pix") {
       // Create PaymentMethod on the server
@@ -43,6 +117,7 @@ export async function POST(request: Request) {
         payment_method_types: ["pix"],
         payment_method: paymentMethod.id,
         confirm: true,
+        customer: customerId,
         metadata,
         payment_method_options: {
           pix: {
@@ -71,11 +146,11 @@ export async function POST(request: Request) {
         },
       })
     } else {
-      // For card payments - confirm on client side
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amountInCents,
         currency: "brl",
         payment_method_types: ["card"],
+        customer: customerId,
         metadata,
       })
 

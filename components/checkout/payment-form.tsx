@@ -205,6 +205,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
           paymentMethodType: "card",
           customer_name: personalInfo.nome,
           customer_email: personalInfo.email,
+          customer_cpf: personalInfo.cpf?.replace(/\D/g, ""),
           address: {
             street: `${addressInfo.endereco}, ${addressInfo.numero}${addressInfo.complemento ? ` - ${addressInfo.complemento}` : ""}`,
             city: addressInfo.cidade,
