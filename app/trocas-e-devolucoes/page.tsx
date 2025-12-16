@@ -19,7 +19,7 @@ export default function Trocas() {
           <p>Oferecemos garantia de 90 dias contra defeitos de fabricação.</p>
 
           <h3 className="text-lg font-semibold text-gray-900">2. Direito de Arrependimento</h3>
-          <p>Você tem 7 dias corridos após o recebimento para desistir da compra. O reembolso é integral.</p>
+          <p>Você tem 7 dias corridos após o recebimento para desistir da compra. O reembolso é integral e é processado em até 5 dias.   </p>
 
           <h3 className="text-lg font-semibold text-gray-900">3. Logística Reversa Nacional</h3>
           <p>
