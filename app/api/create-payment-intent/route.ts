@@ -44,9 +44,15 @@ async function getOrCreateCustomer(
 }
 
 async function addTaxIdToCustomer(customerId: string, cpf: string): Promise<void> {
+  const normalizedCpf = cpf.replace(/\D/g, "")
+
   try {
     const existingTaxIds = await stripe.customers.listTaxIds(customerId, { limit: 100 })
-    const cpfExists = existingTaxIds.data.some((taxId) => taxId.type === "br_cpf" && taxId.value === cpf)
+    const cpfExists = existingTaxIds.data.some((taxId) => {
+      if (taxId.type !== "br_cpf") return false
+      const existingCpf = taxId.value.replace(/\D/g, "")
+      return existingCpf === normalizedCpf
+    })
 
     if (cpfExists) {
       return // Tax ID already exists, no need to add
@@ -54,14 +60,13 @@ async function addTaxIdToCustomer(customerId: string, cpf: string): Promise<void
 
     await stripe.customers.createTaxId(customerId, {
       type: "br_cpf",
-      value: cpf,
+      value: normalizedCpf,
     })
   } catch (error) {
-    if (
-      error instanceof Stripe.errors.StripeError &&
-      (error.code === "tax_id_already_exists" || error.code === "resource_already_exists")
-    ) {
-      return
+    if (error instanceof Stripe.errors.StripeError) {
+      if (error.code === "tax_id_already_exists" || error.code === "resource_already_exists") {
+        return // Expected error, ignore silently
+      }
     }
     // Log other errors but don't fail the payment
     console.warn("Warning: Could not add Tax ID to customer:", error)
