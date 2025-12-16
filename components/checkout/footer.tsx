@@ -1,4 +1,8 @@
+"use client"
+
 import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const paymentMethods = [
   {
@@ -24,6 +28,9 @@ const paymentMethods = [
 ]
 
 export function Footer() {
+  const pathname = usePathname()
+  const returnUrl = encodeURIComponent(pathname)
+
   return (
     <footer className="bg-white border-t border-gray-100 mt-8">
       <div className="mx-auto max-w-7xl px-4 py-8">
@@ -49,25 +56,27 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Company Info */}
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-gray-900">Katuchef</p>
-          <p className="text-xs text-gray-500">info@katucheftitanio.com</p>
+          <p className="text-sm font-medium text-gray-900">Anor Commerce LLC</p>
+          <p className="text-xs text-gray-500">1209 Mountain Road Place Northeast, Albuquerque, NM, 87110</p>
+          <p className="text-xs text-gray-500">info@katucheftitanio.com | +55 27 99640-2344</p>
         </div>
 
-        {/* Legal Links */}
         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
-          <a href="#" className="hover:text-gray-700 transition-colors">
+          <Link href={`/termos-de-uso?returnUrl=${returnUrl}`} className="hover:text-gray-700 transition-colors">
             Termos de Uso
-          </a>
+          </Link>
           <span className="text-gray-300">|</span>
-          <a href="#" className="hover:text-gray-700 transition-colors">
+          <Link href={`/trocas-e-devolucoes?returnUrl=${returnUrl}`} className="hover:text-gray-700 transition-colors">
             Trocas e Devoluções
-          </a>
+          </Link>
           <span className="text-gray-300">|</span>
-          <a href="#" className="hover:text-gray-700 transition-colors">
+          <Link
+            href={`/politica-de-privacidade?returnUrl=${returnUrl}`}
+            className="hover:text-gray-700 transition-colors"
+          >
             Política de Privacidade
-          </a>
+          </Link>
         </div>
       </div>
     </footer>
