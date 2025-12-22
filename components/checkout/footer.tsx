@@ -59,7 +59,7 @@ export function Footer() {
         <div className="text-center space-y-2">
           <p className="text-sm font-medium text-gray-900">Anor Commerce LLC</p>
           <p className="text-xs text-gray-500">1209 Mountain Road Place Northeast, Albuquerque, NM, 87110</p>
-          <p className="text-xs text-gray-500">info@katucheftitanio.com | +55 27 99640-2344</p>
+          <p className="text-xs text-gray-500">info@katucheftitanio.com | </p>
         </div>
 
         <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">

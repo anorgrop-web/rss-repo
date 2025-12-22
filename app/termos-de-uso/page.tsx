@@ -32,9 +32,7 @@ export default function TermosDeUso() {
           <p>O código de rastreamento é enviado automaticamente após a postagem.</p>
 
           <h3 className="text-lg font-semibold text-gray-900">2. Suporte</h3>
-          <p>
-            E-mail: info@katucheftitanio.com <br /> WhatsApp: +55 27 99640-2344
-          </p>
+          <p>E-mail: info@katucheftitanio.com</p>
         </div>
       </main>
       <Footer />

@@ -52,7 +52,7 @@ export default function PoliticaDePrivacidade() {
 
           <h3 className="text-lg font-semibold text-gray-900">6. Contato</h3>
           <p>
-            E-mail: info@katucheftitanio.com <br /> WhatsApp: +55 27 99640-2344
+            E-mail: info@katucheftitanio.com <br /> 
           </p>
         </div>
       </main>
