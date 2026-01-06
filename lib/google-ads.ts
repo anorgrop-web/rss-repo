@@ -6,7 +6,8 @@ export function sendGoogleAdsConversion({
   transaction_id: string
 }) {
   if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "conversion_event_purchase_1", {
+    window.gtag("event", "conversion", {
+      send_to: "AW-17857035478/wJ-7CM7025cZENbV-9YC",
       value: value,
       currency: "BRL",
       transaction_id: transaction_id,

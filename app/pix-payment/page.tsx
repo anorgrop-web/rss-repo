@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { Copy, Check, Smartphone, QrCode, CreditCard } from "lucide-react"
 import { Footer } from "@/components/checkout/footer"
 import { HybridTracker } from "@/components/hybrid-tracker"
 import { sendGoogleAdsConversion } from "@/lib/google-ads"
+import { sendGA4PurchaseEvent } from "@/lib/ga4-events"
 
 const paymentMethods = [
   { name: "Mastercard", logo: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-mastercard.svg" },
@@ -29,6 +30,7 @@ export default function PixPaymentPage() {
   const [expirationDate, setExpirationDate] = useState<string>("")
   const [isExpired, setIsExpired] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState<string>("")
+  const hasTrackedPurchase = useRef(false)
 
   const pixCode = searchParams.get("code") || ""
   const qrCodeUrl = searchParams.get("qr") || ""
@@ -47,7 +49,25 @@ export default function PixPaymentPage() {
   const formattedAmount = Number.parseFloat(amount).toFixed(2).replace(".", ",")
 
   useEffect(() => {
-    if (paymentIntentId && amount) {
+    if (paymentIntentId && amount && !hasTrackedPurchase.current) {
+      hasTrackedPurchase.current = true
+
+      sendGA4PurchaseEvent({
+        transaction_id: paymentIntentId,
+        value: Number.parseFloat(amount),
+        payment_type: "pix",
+        items: [
+          {
+            item_id: "tabua-titanio",
+            item_name: "Tábua de Titânio Katuchef",
+            price: Number.parseFloat(amount),
+            quantity: 1,
+            item_brand: "Katuchef",
+            item_category: "Utensílios de Cozinha",
+          },
+        ],
+      })
+
       sendGoogleAdsConversion({
         value: Number.parseFloat(amount),
         transaction_id: paymentIntentId,
