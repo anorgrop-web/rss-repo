@@ -75,6 +75,9 @@ async function addTaxIdToCustomer(customerId: string, cpf: string): Promise<void
 
 export async function POST(request: Request) {
   try {
+    const forwardedFor = request.headers.get("x-forwarded-for")
+    const clientIp = forwardedFor ? forwardedFor.split(",")[0].trim() : "127.0.0.1"
+
     const body = await request.json()
     const {
       amount,
@@ -102,6 +105,20 @@ export async function POST(request: Request) {
       metadata.products = JSON.stringify(products)
     }
     metadata.payment_method = paymentMethodType
+    metadata.customer_ip = clientIp
+
+    const shippingData = address
+      ? {
+          name: customer_name,
+          address: {
+            line1: address.street || "",
+            city: address.city || "",
+            state: address.state || "",
+            postal_code: address.cep?.replace(/\D/g, "") || "",
+            country: "BR",
+          },
+        }
+      : undefined
 
     let customerId: string | undefined
     if (customer_email && customer_name) {
@@ -166,6 +183,8 @@ export async function POST(request: Request) {
         payment_method_types: ["card"],
         customer: customerId,
         metadata,
+        shipping: shippingData,
+        description: `Pedido de ${customer_name || "Cliente"}`,
       })
 
       return NextResponse.json({

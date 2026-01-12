@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { CreditCard, Lock, Loader2 } from "lucide-react"
+import { CreditCard, Lock, Loader2, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement } from "@stripe/react-stripe-js"
@@ -9,6 +9,14 @@ import { useRouter } from "next/navigation"
 import type { StripeCardNumberElementChangeEvent } from "@stripe/stripe-js"
 import type { PersonalInfo, AddressInfo } from "@/app/page"
 import { sendGAEvent } from "@next/third-parties/google"
+
+const ORDER_BUMP_PRODUCT = {
+  id: "bump-churrasco",
+  name: "O Código da Carne: Manual de Cortes, Temperos e Facas",
+  price: 24.9,
+  originalPrice: 49.9,
+  image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/Imagem%20orderbump.png",
+}
 
 interface PaymentFormProps {
   visible: boolean
@@ -69,6 +77,11 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [detectedBrand, setDetectedBrand] = useState<string | null>(null)
   const [cardNumberError, setCardNumberError] = useState<string | null>(null)
+  const [isBumpSelected, setIsBumpSelected] = useState(false)
+
+  const SHOW_ORDER_BUMP = false
+
+  const finalTotal = isBumpSelected && SHOW_ORDER_BUMP ? totalAmount + ORDER_BUMP_PRODUCT.price : totalAmount
 
   const handleCardNumberChange = (event: StripeCardNumberElementChangeEvent) => {
     setDetectedBrand(event.brand !== "unknown" ? event.brand : null)
@@ -82,14 +95,14 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
   const installmentOptions = useMemo(() => {
     const options = []
     for (let i = 1; i <= 12; i++) {
-      const installmentValue = totalAmount / i
+      const installmentValue = finalTotal / i
       options.push({
         value: String(i),
         label: `${i} x R$ ${installmentValue.toFixed(2).replace(".", ",")}`,
       })
     }
     return options
-  }, [totalAmount])
+  }, [finalTotal])
 
   const selectedInstallment = installmentOptions.find((o) => o.value === parcelas)
 
@@ -114,7 +127,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
     sendGAEvent("event", "add_payment_info", {
       payment_type: "pix",
       currency: "BRL",
-      value: totalAmount,
+      value: finalTotal, // Updated to finalTotal
     })
 
     try {
@@ -128,7 +141,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totalAmount,
+          amount: finalTotal, // Updated to finalTotal
           paymentMethodType: "pix",
           billingDetails: {
             name: personalInfo.nome,
@@ -143,6 +156,9 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
             state: addressInfo.estado,
             cep: addressInfo.cep,
           },
+          products: isBumpSelected
+            ? [{ name: ORDER_BUMP_PRODUCT.name, quantity: 1, price: ORDER_BUMP_PRODUCT.price }]
+            : undefined,
         }),
       })
 
@@ -158,9 +174,9 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
         const params = new URLSearchParams({
           code: data.pixData.code,
           qr: data.pixData.qrCodeUrl,
-          amount: totalAmount.toString(),
+          amount: finalTotal.toString(), // Updated to finalTotal
           expires: data.pixData.expiresAt.toString(),
-          pi: data.paymentIntentId, // PaymentIntent ID for status polling
+          pi: data.paymentIntentId,
           name: personalInfo.nome,
           email: personalInfo.email,
           phone: personalInfo.celular || "",
@@ -193,7 +209,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
     sendGAEvent("event", "add_payment_info", {
       payment_type: "card",
       currency: "BRL",
-      value: totalAmount,
+      value: finalTotal, // Updated to finalTotal
     })
 
     try {
@@ -201,7 +217,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totalAmount,
+          amount: finalTotal, // Updated to finalTotal
           paymentMethodType: "card",
           customer_name: personalInfo.nome,
           customer_email: personalInfo.email,
@@ -212,6 +228,9 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
             state: addressInfo.estado,
             cep: addressInfo.cep,
           },
+          products: isBumpSelected
+            ? [{ name: ORDER_BUMP_PRODUCT.name, quantity: 1, price: ORDER_BUMP_PRODUCT.price }]
+            : undefined,
         }),
       })
 
@@ -245,7 +264,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
           state: addressInfo.estado,
           cep: addressInfo.cep,
           method: "card",
-          amount: totalAmount.toString(),
+          amount: finalTotal.toString(), // Updated to finalTotal
         })
         router.push(`/success?${successParams.toString()}`)
       }
@@ -255,6 +274,54 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
       setIsProcessing(false)
     }
   }
+
+  const OrderBumpCard = () => (
+    <div className="bg-yellow-50 border-2 border-dashed border-yellow-400 rounded-lg p-4 mb-4">
+      <p className="text-xs text-gray-600 mb-3 font-medium">Parabéns, você ganhou 50% de desconto!</p>
+      <div className="flex items-center gap-3">
+        <div className="relative w-16 h-20 flex-shrink-0">
+          <Image
+            src={ORDER_BUMP_PRODUCT.image || "/placeholder.svg"}
+            alt={ORDER_BUMP_PRODUCT.name}
+            fill
+            className="object-cover rounded"
+            unoptimized
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-semibold text-gray-900 leading-tight">{ORDER_BUMP_PRODUCT.name}</h4>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="text-xs text-gray-400 line-through">
+              R$ {ORDER_BUMP_PRODUCT.originalPrice.toFixed(2).replace(".", ",")}
+            </span>
+            <span className="text-sm font-bold text-green-600">
+              R$ {ORDER_BUMP_PRODUCT.price.toFixed(2).replace(".", ",")}
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsBumpSelected(!isBumpSelected)
+          }}
+          className={cn(
+            "flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold transition-colors",
+            isBumpSelected ? "bg-green-500 text-white" : "bg-red-500 hover:bg-red-600 text-white",
+          )}
+        >
+          {isBumpSelected ? (
+            <span className="flex items-center gap-1">
+              <Check className="h-3 w-3" />
+              ADICIONADO
+            </span>
+          ) : (
+            "LEVAR JUNTO"
+          )}
+        </button>
+      </div>
+    </div>
+  )
 
   if (!visible) {
     return (
@@ -324,10 +391,16 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
                 pagamento, basta ter o app do seu banco em seu celular.
               </p>
 
+              {SHOW_ORDER_BUMP && (
+                <div className="mt-4">
+                  <OrderBumpCard />
+                </div>
+              )}
+
               <button
                 onClick={handlePixPayment}
                 disabled={isProcessing || !stripe}
-                className="w-full mt-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 {isProcessing ? (
                   <>
@@ -336,7 +409,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
                   </>
                 ) : (
                   <>
-                    PAGAR <span className="text-green-200">R$ {totalAmount.toFixed(2).replace(".", ",")}</span>
+                    PAGAR <span className="text-green-200">R$ {finalTotal.toFixed(2).replace(".", ",")}</span>
                   </>
                 )}
               </button>
@@ -458,17 +531,22 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
                 <select
                   value={parcelas}
                   onChange={(e) => setParcelas(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:0.7em] bg-[right_1rem_center] bg-no-repeat"
                 >
-                  {installmentOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
+                  {installmentOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Pay Button */}
+              {SHOW_ORDER_BUMP && (
+                <div className="mb-4">
+                  <OrderBumpCard />
+                </div>
+              )}
+
               <button
                 onClick={handleCardPayment}
                 disabled={isProcessing || !stripe || !elements}
