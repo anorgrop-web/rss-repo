@@ -15,6 +15,7 @@ import { HybridTracker } from "@/components/hybrid-tracker"
 import { sendGAEvent } from "@next/third-parties/google"
 import { fbEvents } from "@/lib/fb-events"
 import { fetchCep } from "@/lib/cep-service"
+import { PixDiscountProvider } from "@/contexts/pix-discount-context"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -180,67 +181,69 @@ export default function TitanchefHome() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] overflow-x-hidden">
-      <HybridTracker
-        event="InitiateCheckout"
-        data={{
-          value: 89.87,
-          currency: "BRL",
-          content_name: "Tábua de Titânio Titanchef - Conjunto com 3",
-          content_ids: ["tabua-conjunto-3-titanchef"],
-          content_type: "product",
-        }}
-      />
-      <TitanchefHeader />
+    <PixDiscountProvider>
+      <div className="min-h-screen bg-[#f4f6f8] overflow-x-hidden">
+        <HybridTracker
+          event="InitiateCheckout"
+          data={{
+            value: 89.87,
+            currency: "BRL",
+            content_name: "Tábua de Titânio Titanchef - Conjunto com 3",
+            content_ids: ["tabua-conjunto-3-titanchef"],
+            content_type: "product",
+          }}
+        />
+        <TitanchefHeader />
 
-      <main className="mx-auto max-w-7xl px-4 py-6">
-        <TitanchefHeroBanner />
+        <main className="mx-auto max-w-7xl px-4 py-6">
+          <TitanchefHeroBanner />
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <PersonalInfoForm personalInfo={personalInfo} onFieldChange={handlePersonalInfoChange} />
-            <ShippingAddressForm
-              addressInfo={addressInfo}
-              onCepChange={handleCEPChange}
-              onFieldChange={handleAddressChange}
-              selectedShipping={selectedShipping}
-              onShippingChange={setSelectedShipping}
-              addressLoaded={addressLoaded}
-              isLoadingCEP={isLoadingCEP}
-              cepError={cepError}
-              numeroRef={numeroRef}
-            />
-            <Elements
-              stripe={stripePromise}
-              options={{
-                mode: "payment",
-                amount: Math.round(totalAmount * 100),
-                currency: "brl",
-                appearance: {
-                  theme: "stripe",
-                  variables: {
-                    colorPrimary: "#16a34a",
-                  },
-                },
-              }}
-            >
-              <TitanchefPaymentForm
-                visible={showPayment}
-                totalAmount={totalAmount}
-                personalInfo={personalInfo}
+          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-6">
+              <PersonalInfoForm personalInfo={personalInfo} onFieldChange={handlePersonalInfoChange} />
+              <ShippingAddressForm
                 addressInfo={addressInfo}
+                onCepChange={handleCEPChange}
+                onFieldChange={handleAddressChange}
+                selectedShipping={selectedShipping}
+                onShippingChange={setSelectedShipping}
+                addressLoaded={addressLoaded}
+                isLoadingCEP={isLoadingCEP}
+                cepError={cepError}
+                numeroRef={numeroRef}
               />
-            </Elements>
-          </div>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  mode: "payment",
+                  amount: Math.round(totalAmount * 100),
+                  currency: "brl",
+                  appearance: {
+                    theme: "stripe",
+                    variables: {
+                      colorPrimary: "#16a34a",
+                    },
+                  },
+                }}
+              >
+                <TitanchefPaymentForm
+                  visible={showPayment}
+                  totalAmount={totalAmount}
+                  personalInfo={personalInfo}
+                  addressInfo={addressInfo}
+                />
+              </Elements>
+            </div>
 
-          <div className="space-y-6">
-            <TitanchefOrderSummary selectedShipping={selectedShipping} />
-            <TrustBadges />
+            <div className="space-y-6">
+              <TitanchefOrderSummary selectedShipping={selectedShipping} />
+              <TrustBadges />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      <TitanchefFooter />
-    </div>
+        <TitanchefFooter />
+      </div>
+    </PixDiscountProvider>
   )
 }

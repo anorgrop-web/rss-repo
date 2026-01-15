@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Minus, Plus, Trash2 } from "lucide-react"
+import { Minus, Plus, Trash2, Tag } from "lucide-react"
 import Image from "next/image"
+import { usePixDiscount } from "@/contexts/pix-discount-context"
 
 const SHIPPING_COSTS: Record<string, number> = {
   pac: 0,
@@ -29,15 +30,24 @@ export function TitanchefOrderSummary({
   productPrice = DEFAULT_PRODUCT_PRICE,
 }: OrderSummaryProps) {
   const [quantity, setQuantity] = useState(1)
+  const { pixDiscountApplied } = usePixDiscount()
 
   const subtotal = productPrice * quantity
-  const discount = 0
+  const pixDiscountValue = pixDiscountApplied ? subtotal * 0.05 : 0
+  const discount = pixDiscountValue
   const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] : 0
   const total = subtotal - discount + shippingCost
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
       <h2 className="text-sm font-bold uppercase tracking-wide text-gray-500 mb-4">Seu Carrinho</h2>
+
+      {pixDiscountApplied && (
+        <div className="mb-4 flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+          <Tag className="h-4 w-4 text-green-600" />
+          <span className="text-sm font-medium text-green-700">Desconto PIX 5% aplicado!</span>
+        </div>
+      )}
 
       {/* Product Card */}
       <div className="flex gap-3 pb-4 border-b border-gray-100">
@@ -99,8 +109,8 @@ export function TitanchefOrderSummary({
           </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Descontos</span>
-          <span className="text-green-600">R$ {discount.toFixed(2).replace(".", ",")}</span>
+          <span className="text-gray-500">{pixDiscountApplied ? "Desconto PIX (5%)" : "Descontos"}</span>
+          <span className="text-green-600">- R$ {discount.toFixed(2).replace(".", ",")}</span>
         </div>
         <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-100">
           <span className="text-gray-900">Total</span>

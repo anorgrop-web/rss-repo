@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { CreditCard, Lock, Loader2, Check } from "lucide-react"
+import { CreditCard, Lock, Loader2, Check, X, AlertTriangle, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement } from "@stripe/react-stripe-js"
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import type { StripeCardNumberElementChangeEvent } from "@stripe/stripe-js"
 import type { PersonalInfo, AddressInfo } from "@/app/titanchef/page"
 import { sendGAEvent } from "@next/third-parties/google"
+import { usePixDiscount } from "@/contexts/pix-discount-context"
 
 const ORDER_BUMP_PRODUCT = {
   id: "bump-churrasco-titanchef",
@@ -55,10 +56,83 @@ const stripeElementStyle = {
   },
 }
 
+function PixRecoveryPopup({
+  isOpen,
+  onClose,
+  onAccept,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  onAccept: () => void
+}) {
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+        {/* Botão X para fechar */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-100 transition-colors"
+          aria-label="Fechar"
+        >
+          <X className="h-5 w-5 text-gray-500" />
+        </button>
+
+        {/* Ícone de alerta */}
+        <div className="flex justify-center mb-4">
+          <div className="h-16 w-16 rounded-full bg-yellow-100 flex items-center justify-center">
+            <AlertTriangle className="h-8 w-8 text-yellow-600" />
+          </div>
+        </div>
+
+        {/* Título */}
+        <h3 className="text-xl font-bold text-gray-900 text-center mb-3">Problema Técnico Detectado</h3>
+
+        {/* Mensagem */}
+        <p className="text-gray-600 text-center mb-4">
+          Estamos enfrentando instabilidades temporárias no processamento de pagamentos via cartão de crédito.
+        </p>
+
+        {/* Observação tranquilizadora */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+          <div className="flex items-start gap-2">
+            <Info className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-blue-800">
+              <strong>Fique tranquilo:</strong> Nenhum pagamento foi efetuado, não houve nenhuma cobrança no seu cartão.
+            </p>
+          </div>
+        </div>
+
+        {/* Oferta */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+          <p className="text-green-800 text-center font-medium">
+            Como pedido de desculpas, estamos oferecendo{" "}
+            <span className="font-bold text-green-700">5% de desconto</span> para pagamentos via PIX!
+          </p>
+        </div>
+
+        {/* Botão de aceitar */}
+        <button
+          onClick={onAccept}
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <Check className="h-5 w-5" />
+          ACEITAR DESCONTO E PAGAR VIA PIX
+        </button>
+
+        {/* Texto secundário */}
+        <p className="text-xs text-gray-500 text-center mt-3">O desconto será aplicado automaticamente ao seu pedido</p>
+      </div>
+    </div>
+  )
+}
+
 export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addressInfo }: PaymentFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const router = useRouter()
+  const { pixDiscountApplied, setPixDiscountApplied } = usePixDiscount()
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("pix")
   const [cardholderName, setCardholderName] = useState("")
@@ -68,10 +142,13 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
   const [detectedBrand, setDetectedBrand] = useState<string | null>(null)
   const [cardNumberError, setCardNumberError] = useState<string | null>(null)
   const [isBumpSelected, setIsBumpSelected] = useState(false)
+  const [showPixRecoveryPopup, setShowPixRecoveryPopup] = useState(false)
 
   const SHOW_ORDER_BUMP = false
 
-  const finalTotal = isBumpSelected && SHOW_ORDER_BUMP ? totalAmount + ORDER_BUMP_PRODUCT.price : totalAmount
+  const baseTotal = isBumpSelected && SHOW_ORDER_BUMP ? totalAmount + ORDER_BUMP_PRODUCT.price : totalAmount
+  const pixDiscountValue = pixDiscountApplied ? baseTotal * 0.05 : 0
+  const finalTotal = baseTotal - pixDiscountValue
 
   const handleCardNumberChange = (event: StripeCardNumberElementChangeEvent) => {
     setDetectedBrand(event.brand !== "unknown" ? event.brand : null)
@@ -80,6 +157,13 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
     } else {
       setCardNumberError(null)
     }
+  }
+
+  const handleAcceptPixOffer = () => {
+    setPixDiscountApplied(true)
+    setPaymentMethod("pix")
+    setShowPixRecoveryPopup(false)
+    setPaymentError(null)
   }
 
   const installmentOptions = useMemo(() => {
@@ -240,6 +324,7 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
 
       if (confirmError) {
         setPaymentError(confirmError.message || "Erro ao processar pagamento")
+        setShowPixRecoveryPopup(true)
       } else if (paymentIntent?.status === "succeeded") {
         const successParams = new URLSearchParams({
           name: personalInfo.nome,
@@ -256,6 +341,7 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
       }
     } catch (err) {
       setPaymentError("Erro ao processar pagamento")
+      setShowPixRecoveryPopup(true)
     } finally {
       setIsProcessing(false)
     }
@@ -331,6 +417,12 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
+      <PixRecoveryPopup
+        isOpen={showPixRecoveryPopup}
+        onClose={() => setShowPixRecoveryPopup(false)}
+        onAccept={handleAcceptPixOffer}
+      />
+
       {/* Header */}
       <div className="flex items-start gap-3 mb-6">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
@@ -341,6 +433,13 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
           <p className="text-xs text-gray-500 mt-0.5">Para finalizar seu pedido escolha uma forma de pagamento</p>
         </div>
       </div>
+
+      {pixDiscountApplied && (
+        <div className="mb-4 flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+          <Check className="h-4 w-4 text-green-600" />
+          <span className="text-sm font-medium text-green-700">Desconto PIX de 5% aplicado!</span>
+        </div>
+      )}
 
       {/* Payment Error */}
       {paymentError && (
@@ -367,6 +466,11 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
               {paymentMethod === "pix" && <div className="w-3 h-3 rounded-full bg-green-500" />}
             </div>
             <span className="font-semibold text-gray-900">PIX</span>
+            {pixDiscountApplied && (
+              <span className="ml-auto text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded">
+                -5% OFF
+              </span>
+            )}
           </div>
 
           {paymentMethod === "pix" && (
@@ -533,7 +637,6 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 onClick={handleCardPayment}
                 disabled={isProcessing || !stripe}
@@ -553,15 +656,15 @@ export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addre
                   </>
                 )}
               </button>
+
+              {/* Security Badge */}
+              <div className="flex items-center justify-center gap-2 mt-4 text-xs text-gray-500">
+                <Lock className="h-3 w-3" />
+                <span>Pagamento 100% seguro</span>
+              </div>
             </div>
           )}
         </div>
-      </div>
-
-      {/* Security Badge */}
-      <div className="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500">
-        <Lock className="h-4 w-4" />
-        <span>Seus dados estão protegidos com criptografia SSL</span>
       </div>
     </div>
   )
