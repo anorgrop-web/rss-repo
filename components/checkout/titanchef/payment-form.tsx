@@ -7,12 +7,12 @@ import Image from "next/image"
 import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement } from "@stripe/react-stripe-js"
 import { useRouter } from "next/navigation"
 import type { StripeCardNumberElementChangeEvent } from "@stripe/stripe-js"
-import type { PersonalInfo, AddressInfo } from "@/app/page"
+import type { PersonalInfo, AddressInfo } from "@/app/titanchef/page"
 import { sendGAEvent } from "@next/third-parties/google"
 
 const ORDER_BUMP_PRODUCT = {
-  id: "bump-churrasco",
-  name: "O Código da Carne: Manual de Cortes, Temperos e Facas",
+  id: "bump-churrasco-titanchef",
+  name: "Titanchef: O Código da Carne - Manual de Cortes, Temperos e Facas",
   price: 24.9,
   originalPrice: 49.9,
   image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/Imagem%20orderbump.png",
@@ -26,16 +26,6 @@ interface PaymentFormProps {
 }
 
 type PaymentMethod = "pix" | "credit_card"
-
-interface PixNextAction {
-  pix_display_qr_code?: {
-    data: string
-    expires_at: number
-    hosted_instructions_url: string
-    image_url_png: string
-    image_url_svg: string
-  }
-}
 
 const cardBrandLogos: Record<string, string> = {
   visa: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/Comum%20/card-visa.svg",
@@ -65,7 +55,7 @@ const stripeElementStyle = {
   },
 }
 
-export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }: PaymentFormProps) {
+export function TitanchefPaymentForm({ visible, totalAmount, personalInfo, addressInfo }: PaymentFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const router = useRouter()
@@ -156,7 +146,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
             state: addressInfo.estado,
             cep: addressInfo.cep,
           },
-          offer_id: "1",
+          offer_id: "2",
         }),
       })
 
@@ -183,7 +173,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
           state: addressInfo.estado,
           cep: addressInfo.cep,
         })
-        router.push(`/pix-payment?${params.toString()}`)
+        router.push(`/titanchef-pix-payment?${params.toString()}`)
       } else {
         setPaymentError("Erro ao gerar código PIX")
         setIsProcessing(false)
@@ -226,7 +216,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
             state: addressInfo.estado,
             cep: addressInfo.cep,
           },
-          offer_id: "1",
+          offer_id: "2",
         }),
       })
 
@@ -262,7 +252,7 @@ export function PaymentForm({ visible, totalAmount, personalInfo, addressInfo }:
           method: "card",
           amount: finalTotal.toString(),
         })
-        router.push(`/success?${successParams.toString()}`)
+        router.push(`/titanchef-success?${successParams.toString()}`)
       }
     } catch (err) {
       setPaymentError("Erro ao processar pagamento")

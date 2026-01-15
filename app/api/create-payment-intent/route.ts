@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       customer_email,
       customer_cpf,
       address,
-      products,
+      offer_id,
     } = body
 
     const amountInCents = Math.round(amount * 100)
@@ -101,9 +101,7 @@ export async function POST(request: Request) {
       metadata.address_state = address.state || ""
       metadata.address_cep = address.cep || ""
     }
-    if (products) {
-      metadata.products = JSON.stringify(products)
-    }
+    if (offer_id) metadata.oid = offer_id
     metadata.payment_method = paymentMethodType
     metadata.customer_ip = clientIp
 

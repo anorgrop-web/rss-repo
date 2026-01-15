@@ -1,5 +1,6 @@
 import { Resend } from "resend"
 import { OrderConfirmationEmail } from "@/components/emails/order-confirmation"
+import { TitanchefOrderConfirmationEmail } from "@/components/emails/titanchef-order-confirmation"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -20,6 +21,7 @@ interface SendOrderConfirmationParams {
     state: string
     cep: string
   }
+  brand?: "katuchef" | "titanchef" // Adicionado suporte para múltiplas marcas
 }
 
 export async function sendOrderConfirmation({
@@ -30,20 +32,43 @@ export async function sendOrderConfirmation({
   paymentMethod,
   products = [],
   address,
+  brand = "katuchef", // Default para katuchef
 }: SendOrderConfirmationParams) {
   try {
+    const brandConfig = {
+      katuchef: {
+        from: "Katuchef <pedidos@katucheftitanio.com>",
+        subject: `Pedido Confirmado! #${orderId}`,
+        emailComponent: OrderConfirmationEmail({
+          customerName,
+          orderId,
+          amount,
+          paymentMethod,
+          products,
+          address,
+        }),
+      },
+      titanchef: {
+        from: "Titanchef <pedidos@titanchefcut.com>",
+        subject: `Pedido Confirmado! #${orderId}`,
+        emailComponent: TitanchefOrderConfirmationEmail({
+          customerName,
+          orderId,
+          amount,
+          paymentMethod,
+          products,
+          address,
+        }),
+      },
+    }
+
+    const config = brandConfig[brand]
+
     const { data, error } = await resend.emails.send({
-      from: "Katuchef <pedidos@katucheftitanio.com>",
+      from: config.from,
       to: [to],
-      subject: `Pedido Confirmado! #${orderId}`,
-      react: OrderConfirmationEmail({
-        customerName,
-        orderId,
-        amount,
-        paymentMethod,
-        products,
-        address,
-      }),
+      subject: config.subject,
+      react: config.emailComponent,
     })
 
     if (error) {

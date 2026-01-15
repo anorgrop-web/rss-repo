@@ -8,6 +8,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
+function detectBrandFromOfferId(offerId: string | undefined): "katuchef" | "titanchef" {
+  // offer_id "2" = titanchef, qualquer outro = katuchef (padrão)
+  return offerId === "2" ? "titanchef" : "katuchef"
+}
+
 export async function POST(request: Request) {
   const body = await request.text()
   const signature = request.headers.get("stripe-signature")
@@ -42,19 +47,11 @@ export async function POST(request: Request) {
       const addressCity = metadata.address_city
       const addressState = metadata.address_state
       const addressCep = metadata.address_cep
-      const productsJson = metadata.products
+      const offerId = metadata.oid
+
+      const brand = detectBrandFromOfferId(offerId)
 
       if (customerEmail && customerName) {
-        // Parse products if available
-        let products: Array<{ name: string; quantity: number; price: number }> = []
-        if (productsJson) {
-          try {
-            products = JSON.parse(productsJson)
-          } catch (e) {
-            console.error("Failed to parse products metadata:", e)
-          }
-        }
-
         // Build address object if available
         const address = addressStreet
           ? {
@@ -72,12 +69,13 @@ export async function POST(request: Request) {
           orderId: paymentIntent.id.slice(-8).toUpperCase(),
           amount: paymentIntent.amount / 100,
           paymentMethod,
-          products,
+          products: [], // Produtos removidos dos metadados
           address,
+          brand, // Identificador da marca para emails (detectado automaticamente)
         })
 
         if (emailResult.success) {
-          console.log(`Order confirmation email sent to ${customerEmail}`)
+          console.log(`Order confirmation email sent to ${customerEmail} (brand: ${brand})`)
         } else {
           console.error(`Failed to send email to ${customerEmail}:`, emailResult.error)
         }
