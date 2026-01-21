@@ -37,7 +37,7 @@ export async function sendOrderConfirmation({
   try {
     const brandConfig = {
       katuchef: {
-        from: "Katuchef <pedidos@katucheftitanio.com>",
+        from: "TitanChef <pedidos@titanchefcut.com>",
         subject: `Pedido Confirmado! #${orderId}`,
         emailComponent: OrderConfirmationEmail({
           customerName,

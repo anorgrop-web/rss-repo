@@ -16,7 +16,7 @@ export function SuccessTracker({
   value,
   paymentMethod,
   transactionId,
-  productName = "Tábua de Titânio Katuchef",
+  productName = "Tábua de Titânio TitanChef",
 }: SuccessTrackerProps) {
   const hasFired = useRef(false)
   const finalTransactionId = transactionId || `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -36,7 +36,7 @@ export function SuccessTracker({
           item_name: productName,
           price: value,
           quantity: 1,
-          item_brand: "Katuchef",
+          item_brand: "TitanChef",
           item_category: "Utensílios de Cozinha",
         },
       ],

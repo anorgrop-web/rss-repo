@@ -16,8 +16,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 function detectBrandFromOfferId(offerId: string | undefined): "katuchef" | "titanchef" {
-  // offer_id "2" = titanchef, qualquer outro = katuchef (padrão)
-  return offerId === "2" ? "titanchef" : "katuchef"
+  // Agora sempre retorna titanchef como marca padrão
+  return "titanchef"
 }
 
 export async function POST(request: Request) {

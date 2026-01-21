@@ -47,7 +47,7 @@ export function OrderConfirmationEmail({
   return (
     <Html>
       <Head />
-      <Preview>Seu pedido Katuchef foi confirmado! Pedido #{orderId}</Preview>
+      <Preview>Seu pedido TitanChef foi confirmado! Pedido #{orderId}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Logo */}
@@ -141,7 +141,7 @@ export function OrderConfirmationEmail({
           {/* Footer */}
           <Section style={footerSection}>
             <Text style={footerText}>Se você tiver alguma dúvida sobre seu pedido, entre em contato conosco.</Text>
-            <Text style={footerText}>© {new Date().getFullYear()} Katuchef. Todos os direitos reservados.</Text>
+            <Text style={footerText}>© {new Date().getFullYear()} TitanChef. Todos os direitos reservados.</Text>
           </Section>
         </Container>
       </Body>

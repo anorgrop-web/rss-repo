@@ -166,7 +166,7 @@ export default function Home() {
       value: 89.87,
       items: [
         {
-          item_name: "Tábua de Titânio Katuchef - Conjunto com 3",
+          item_name: "Tábua de Titânio TitanChef - Conjunto com 3",
           item_id: "tabua-conjunto-3",
           price: 89.87,
         },
@@ -175,7 +175,7 @@ export default function Home() {
     fbEvents("InitiateCheckout", {
       value: 89.87,
       currency: "BRL",
-      content_name: "Tábua de Titânio Katuchef - Conjunto com 3",
+      content_name: "Tábua de Titânio TitanChef - Conjunto com 3",
       content_ids: ["tabua-conjunto-3"],
       content_type: "product",
     })
@@ -189,7 +189,7 @@ export default function Home() {
           data={{
             value: 89.87,
             currency: "BRL",
-            content_name: "Tábua de Titânio Katuchef - Conjunto com 3",
+            content_name: "Tábua de Titânio TitanChef - Conjunto com 3",
             content_ids: ["tabua-conjunto-3"],
             content_type: "product",
           }}

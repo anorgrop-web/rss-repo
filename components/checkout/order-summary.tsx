@@ -18,7 +18,7 @@ interface OrderSummaryProps {
   productPrice?: number
 }
 
-const DEFAULT_PRODUCT_TITLE = "Tábua de Titânio Katuchef - Kit Completo 3 tamanhos"
+const DEFAULT_PRODUCT_TITLE = "Tábua de Titânio TitanChef - Kit Completo 3 tamanhos"
 const DEFAULT_PRODUCT_IMAGE =
   "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/Kit%20de%20T%C3%A1buas%20de%20Corte%20%282%29.png"
 const DEFAULT_PRODUCT_PRICE = 89.87

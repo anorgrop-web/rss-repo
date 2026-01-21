@@ -14,8 +14,8 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 // Updated metadata for checkout page
 export const metadata: Metadata = {
-  title: "Checkout - Katuchef",
-  description: "Finalize sua compra de tábuas de titânio Katuchef",
+  title: "Checkout - TitanChef",
+  description: "Finalize sua compra de tábuas de titânio TitanChef",
   generator: "v0.app",
   icons: {
     icon: [

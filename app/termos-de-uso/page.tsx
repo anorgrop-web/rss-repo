@@ -32,7 +32,7 @@ export default function TermosDeUso() {
           <p>O código de rastreamento é enviado automaticamente após a postagem.</p>
 
           <h3 className="text-lg font-semibold text-gray-900">2. Suporte</h3>
-          <p>E-mail: info@katucheftitanio.com</p>
+          <p>E-mail: info@titanchefcut.com</p>
         </div>
       </main>
       <Footer />

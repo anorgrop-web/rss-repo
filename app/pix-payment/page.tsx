@@ -59,10 +59,10 @@ export default function PixPaymentPage() {
         items: [
           {
             item_id: "tabua-titanio",
-            item_name: "Tábua de Titânio Katuchef",
+            item_name: "Tábua de Titânio TitanChef",
             price: Number.parseFloat(amount),
             quantity: 1,
-            item_brand: "Katuchef",
+            item_brand: "TitanChef",
             item_category: "Utensílios de Cozinha",
           },
         ],
@@ -180,8 +180,8 @@ export default function PixPaymentPage() {
       <header className="bg-white border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-4 py-3">
           <Image
-            src="/katuchef-logo-with-cutting-board-icon.jpg"
-            alt="Katuchef"
+            src="/titanchef-logo.jpg"
+            alt="TitanChef"
             width={60}
             height={40}
             className="h-10 w-auto"

@@ -42,10 +42,10 @@ export function sendGA4PurchaseEvent({
     items: items || [
       {
         item_id: "tabua-titanio",
-        item_name: "Tábua de Titânio Katuchef",
+        item_name: "Tábua de Titânio TitanChef",
         price: value,
         quantity: 1,
-        item_brand: "Katuchef",
+        item_brand: "TitanChef",
         item_category: "Utensílios de Cozinha",
       },
     ],
@@ -75,10 +75,10 @@ export function sendGA4BeginCheckoutEvent(value: number, items?: PurchaseItem[])
     items: items || [
       {
         item_id: "tabua-titanio",
-        item_name: "Tábua de Titânio Katuchef",
+        item_name: "Tábua de Titânio TitanChef",
         price: value,
         quantity: 1,
-        item_brand: "Katuchef",
+        item_brand: "TitanChef",
         item_category: "Utensílios de Cozinha",
       },
     ],

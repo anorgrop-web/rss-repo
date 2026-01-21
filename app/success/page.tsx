@@ -30,8 +30,8 @@ export default async function SuccessPage({ searchParams }: PageProps) {
       <header className="bg-white border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-4 py-3">
           <Image
-            src="/katuchef-logo-with-cutting-board-icon.jpg"
-            alt="Katuchef"
+            src="/titanchef-logo.jpg"
+            alt="TitanChef"
             width={60}
             height={40}
             className="h-10 w-auto"
@@ -73,8 +73,8 @@ export default async function SuccessPage({ searchParams }: PageProps) {
                 <h3 className="font-semibold text-gray-900 mb-1">Dúvidas?</h3>
                 <p className="text-sm text-gray-600">
                   Entre em contato conosco pelo e-mail:{" "}
-                  <a href="mailto:info@anorcommerce.com" className="text-green-600 font-medium hover:underline">
-                    info@anorcommerce.com
+                  <a href="mailto:info@titanchefcut.com" className="text-green-600 font-medium hover:underline">
+                    info@titanchefcut.com
                   </a>
                 </p>
               </div>
@@ -163,8 +163,8 @@ export default async function SuccessPage({ searchParams }: PageProps) {
 
           {/* Company Info */}
           <div className="text-center space-y-2">
-            <p className="text-sm font-medium text-gray-900">Katuchef</p>
-            <p className="text-xs text-gray-500">info@katucheftitanio.com</p>
+            <p className="text-sm font-medium text-gray-900">TitanChef</p>
+            <p className="text-xs text-gray-500">info@titanchefcut.com</p>
           </div>
 
           {/* Legal Links */}
