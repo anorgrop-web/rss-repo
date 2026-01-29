@@ -28,14 +28,14 @@ export default function PoliticaDePrivacidade() {
 
           <h3 className="text-lg font-semibold text-gray-900">2. Processamento de Pagamentos</h3>
           <p>
-            Os pagamentos são processados de forma segura através do <strong>Stripe</strong>, uma plataforma de
+            Os pagamentos são processados de forma segura através de uma plataforma de
             pagamentos certificada PCI-DSS. Não armazenamos dados de cartão de crédito em nossos servidores.
           </p>
 
           <h3 className="text-lg font-semibold text-gray-900">3. Compartilhamento de Dados</h3>
           <p>
-            Seus dados podem ser compartilhados com: transportadoras (para entrega), processadores de pagamento
-            (Stripe), e autoridades legais quando exigido por lei.
+            Seus dados podem ser compartilhados com: transportadoras (para entrega), processadores de pagamento,
+            e autoridades legais quando exigido por lei.
           </p>
 
           <h3 className="text-lg font-semibold text-gray-900">4. Segurança</h3>
