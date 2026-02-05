@@ -34,7 +34,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
             alt="TitanChef"
             width={60}
             height={40}
-            className="h-10 w-auto"
+            style={{ height: '2.5rem', width: 'auto' }}
           />
         </div>
       </header>
