@@ -164,10 +164,6 @@ const logoSection = {
   textAlign: "center" as const,
 }
 
-const logo = {
-  margin: "0 auto",
-}
-
 const headerSection = {
   padding: "0 40px",
   textAlign: "center" as const,
