@@ -3,17 +3,18 @@ import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 import { sendOrderConfirmation } from "@/lib/email"
 
-// Supabase client with Service Role for write permissions
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-04-30.basil",
-})
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2025-04-30.basil",
+  })
+}
 
 export async function POST(request: Request) {
   const body = await request.text()
@@ -23,6 +24,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 })
   }
 
+  const stripe = getStripe()
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
   let event: Stripe.Event
 
   try {
@@ -51,6 +54,7 @@ export async function POST(request: Request) {
       const addressCep = metadata.address_cep
       // Save order to Supabase database
       try {
+        const supabase = getSupabase()
         const { error: supabaseError } = await supabase.from("pedidos").insert({
           codigo_rastreio: paymentIntent.id.slice(-8).toUpperCase(),
           nome_cliente: customerName || "",
