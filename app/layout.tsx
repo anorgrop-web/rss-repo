@@ -59,7 +59,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <FacebookPixel />
         </Suspense>
-        <GoogleAnalytics gaId="G-YKD5QZVEHQ" />
+        <GoogleAnalytics gaId="G-3RTZ6Z4X7M" />
         {children}
         <Analytics />
       </body>
