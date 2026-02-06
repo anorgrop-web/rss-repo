@@ -41,7 +41,7 @@ export async function sendOrderConfirmation({
     const { data, error } = await getResend().emails.send({
       from: "Jardim da Cida <info@jardimdacida.com>",
       to: [to],
-      subject: `Pedido Confirmado! #${orderId}`,
+      subject: `Pedido Confirmado! #${orderId} - Jardim da Cida`,
       react: OrderConfirmationEmail({
         customerName,
         orderId,
