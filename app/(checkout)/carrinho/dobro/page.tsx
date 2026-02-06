@@ -18,11 +18,18 @@ import { PixDiscountProvider } from "@/contexts/pix-discount-context"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
+// TODO: Atualizar este preço com o valor real do cliente
 const PRODUCT_CONFIG = {
-  title: "Tábua de Titânio TitanChef - Tamanho Grande 34cm X 24cm",
-  image:
-    "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/ChatGPT%20Image%2027%20de%20ago.%20de%202025%2C%2011_04_04%20%282%29.png",
-  price: 79.9,
+  title: "Kit Rosas do Deserto em Dobro (10 Unidades)",
+  image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Group%201105.png",
+  price: 104.9,
+  id: "kit-rosas-dobro",
+}
+
+const SHIPPING_COSTS: Record<string, number> = {
+  pac: 0,
+  jadlog: 14.98,
+  sedex: 24.98,
 }
 
 export interface PersonalInfo {
@@ -63,7 +70,7 @@ function maskCEP(value: string): string {
   return `${digits.slice(0, 5)}-${digits.slice(5)}`
 }
 
-export default function GrandePage() {
+export default function DobroPage() {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     email: "",
     nome: "",
@@ -157,12 +164,7 @@ export default function GrandePage() {
   const showPayment = isPersonalInfoComplete() && isShippingComplete
 
   const totalAmount = useMemo(() => {
-    const shippingCosts: Record<string, number> = {
-      pac: 0,
-      jadlog: 14.98,
-      sedex: 24.98,
-    }
-    const shippingCost = selectedShipping ? shippingCosts[selectedShipping] || 0 : 0
+    const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] || 0 : 0
     return PRODUCT_CONFIG.price + shippingCost
   }, [selectedShipping])
 
@@ -173,7 +175,7 @@ export default function GrandePage() {
       items: [
         {
           item_name: PRODUCT_CONFIG.title,
-          item_id: "tabua-grande",
+          item_id: PRODUCT_CONFIG.id,
           price: PRODUCT_CONFIG.price,
         },
       ],
@@ -189,14 +191,14 @@ export default function GrandePage() {
             value: PRODUCT_CONFIG.price,
             currency: "BRL",
             content_name: PRODUCT_CONFIG.title,
-            content_ids: ["tabua-grande"],
+            content_ids: [PRODUCT_CONFIG.id],
             content_type: "product",
           }}
         />
         <Header />
 
         <main className="mx-auto max-w-7xl px-4 py-6">
-          <HeroBanner />
+            <HeroBanner src={PRODUCT_CONFIG.image} />
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
@@ -211,6 +213,7 @@ export default function GrandePage() {
                 isLoadingCEP={isLoadingCEP}
                 cepError={cepError}
                 numeroRef={numeroRef}
+                shippingCosts={SHIPPING_COSTS}
               />
               <Elements
                 stripe={stripePromise}
@@ -241,6 +244,7 @@ export default function GrandePage() {
                 productTitle={PRODUCT_CONFIG.title}
                 productImage={PRODUCT_CONFIG.image}
                 productPrice={PRODUCT_CONFIG.price}
+                shippingCosts={SHIPPING_COSTS}
               />
               <TrustBadges />
             </div>

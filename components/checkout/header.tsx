@@ -1,5 +1,4 @@
 import { ShoppingCart } from "lucide-react"
-import Image from "next/image"
 
 export function Header() {
   return (
@@ -7,7 +6,7 @@ export function Header() {
       <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <Image src="/titanchef-logo.jpg" alt="TitanChef" width={60} height={40} className="h-10 w-auto" />
+          <span className="text-lg font-bold text-green-700">Jardim da Cida</span>
         </div>
 
         {/* Cart Icon */}

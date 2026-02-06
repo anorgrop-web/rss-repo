@@ -149,10 +149,11 @@ export default function Home() {
 
   const showPayment = isPersonalInfoComplete() && isShippingComplete
 
+  // TODO: Atualizar este preço com o valor real do cliente
   const totalAmount = useMemo(() => {
-    const productPrice = 89.87
+    const productPrice = 69.9
     const shippingCosts: Record<string, number> = {
-      pac: 0,
+      pac: 15.59,
       jadlog: 14.98,
       sedex: 24.98,
     }
@@ -163,20 +164,20 @@ export default function Home() {
   useEffect(() => {
     sendGAEvent("event", "begin_checkout", {
       currency: "BRL",
-      value: 89.87,
+      value: 69.9,
       items: [
         {
-          item_name: "Tábua de Titânio TitanChef - Conjunto com 3",
-          item_id: "tabua-conjunto-3",
-          price: 89.87,
+          item_name: "Kit Rosas do Deserto (5 Unidades)",
+          item_id: "kit-rosas-simples",
+          price: 69.9,
         },
       ],
     })
     fbEvents("InitiateCheckout", {
-      value: 89.87,
+      value: 69.9,
       currency: "BRL",
-      content_name: "Tábua de Titânio TitanChef - Conjunto com 3",
-      content_ids: ["tabua-conjunto-3"],
+      content_name: "Kit Rosas do Deserto (5 Unidades)",
+      content_ids: ["kit-rosas-simples"],
       content_type: "product",
     })
   }, [])
@@ -187,10 +188,10 @@ export default function Home() {
         <HybridTracker
           event="InitiateCheckout"
           data={{
-            value: 89.87,
+            value: 69.9,
             currency: "BRL",
-            content_name: "Tábua de Titânio TitanChef - Conjunto com 3",
-            content_ids: ["tabua-conjunto-3"],
+            content_name: "Kit Rosas do Deserto (5 Unidades)",
+            content_ids: ["kit-rosas-simples"],
             content_type: "product",
           }}
         />

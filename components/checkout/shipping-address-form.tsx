@@ -9,6 +9,12 @@ import Image from "next/image"
 import type { AddressInfo } from "@/app/page"
 import { sendGAEvent } from "@next/third-parties/google"
 
+const DEFAULT_SHIPPING_COSTS: Record<string, number> = {
+  pac: 15.59,
+  jadlog: 14.98,
+  sedex: 24.98,
+}
+
 interface ShippingAddressFormProps {
   addressInfo: AddressInfo
   onCepChange: (value: string) => void
@@ -19,41 +25,33 @@ interface ShippingAddressFormProps {
   isLoadingCEP: boolean
   cepError: string | null
   numeroRef: React.RefObject<HTMLInputElement>
+  shippingCosts?: Record<string, number>
 }
 
-const shippingOptions = [
-  {
-    id: "pac",
-    name: "Correios PAC",
-    deliveryTime: "8 a 12 dias",
-    price: 0,
-    logo: "correios",
-  },
-  {
-    id: "jadlog",
-    name: "Jadlog",
-    deliveryTime: "8 a 10 dias",
-    price: 14.98,
-    logo: "jadlog",
-  },
-  {
-    id: "sedex",
-    name: "Correios Sedex",
-    deliveryTime: "4 a 7 dias",
-    price: 24.98,
-    logo: "correios",
-  },
-]
-
-const handleShippingSelection = (optionId: string, onShippingChange: (shippingId: string) => void) => {
-  const selectedOption = shippingOptions.find((opt) => opt.id === optionId)
-  if (selectedOption) {
-    sendGAEvent("event", "add_shipping_info", {
-      shipping_tier: selectedOption.name,
-      currency: "BRL",
-    })
-  }
-  onShippingChange(optionId)
+function getShippingOptions(costs: Record<string, number>) {
+  return [
+    {
+      id: "pac",
+      name: "Correios PAC",
+      deliveryTime: "8 a 12 dias",
+      price: costs.pac ?? 15.59,
+      logo: "correios",
+    },
+    {
+      id: "jadlog",
+      name: "Jadlog",
+      deliveryTime: "8 a 10 dias",
+      price: costs.jadlog ?? 14.98,
+      logo: "jadlog",
+    },
+    {
+      id: "sedex",
+      name: "Correios Sedex",
+      deliveryTime: "4 a 7 dias",
+      price: costs.sedex ?? 24.98,
+      logo: "correios",
+    },
+  ]
 }
 
 export function ShippingAddressForm({
@@ -66,7 +64,20 @@ export function ShippingAddressForm({
   isLoadingCEP,
   cepError,
   numeroRef,
+  shippingCosts = DEFAULT_SHIPPING_COSTS,
 }: ShippingAddressFormProps) {
+  const shippingOptions = getShippingOptions(shippingCosts)
+
+  const handleShippingSelection = (optionId: string) => {
+    const selectedOption = shippingOptions.find((opt) => opt.id === optionId)
+    if (selectedOption) {
+      sendGAEvent("event", "add_shipping_info", {
+        shipping_tier: selectedOption.name,
+        currency: "BRL",
+      })
+    }
+    onShippingChange(optionId)
+  }
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
       <div className="flex items-start gap-3 mb-6">
@@ -218,7 +229,7 @@ export function ShippingAddressForm({
                         name="shipping"
                         value={option.id}
                         checked={selectedShipping === option.id}
-                        onChange={() => handleShippingSelection(option.id, onShippingChange)}
+                        onChange={() => handleShippingSelection(option.id)}
                         className="h-4 w-4 text-green-600 focus:ring-green-500"
                       />
                       <div>

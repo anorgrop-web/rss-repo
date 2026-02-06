@@ -41,12 +41,12 @@ export function sendGA4PurchaseEvent({
     payment_type,
     items: items || [
       {
-        item_id: "tabua-titanio",
-        item_name: "Tábua de Titânio TitanChef",
+        item_id: "kit-rosas-deserto",
+        item_name: "Kit Rosas do Deserto - Jardim da Cida",
         price: value,
         quantity: 1,
-        item_brand: "TitanChef",
-        item_category: "Utensílios de Cozinha",
+        item_brand: "Jardim da Cida",
+        item_category: "Plantas e Jardinagem",
       },
     ],
     coupon,
@@ -74,12 +74,12 @@ export function sendGA4BeginCheckoutEvent(value: number, items?: PurchaseItem[])
     currency: "BRL",
     items: items || [
       {
-        item_id: "tabua-titanio",
-        item_name: "Tábua de Titânio TitanChef",
+        item_id: "kit-rosas-deserto",
+        item_name: "Kit Rosas do Deserto - Jardim da Cida",
         price: value,
         quantity: 1,
-        item_brand: "TitanChef",
-        item_category: "Utensílios de Cozinha",
+        item_brand: "Jardim da Cida",
+        item_category: "Plantas e Jardinagem",
       },
     ],
   })

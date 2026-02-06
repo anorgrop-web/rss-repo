@@ -58,12 +58,12 @@ export default function PixPaymentPage() {
         payment_type: "pix",
         items: [
           {
-            item_id: "tabua-titanio",
-            item_name: "Tábua de Titânio TitanChef",
+            item_id: "kit-rosas-deserto",
+            item_name: "Kit Rosas do Deserto - Jardim da Cida",
             price: Number.parseFloat(amount),
             quantity: 1,
-            item_brand: "TitanChef",
-            item_category: "Utensílios de Cozinha",
+            item_brand: "Jardim da Cida",
+            item_category: "Plantas e Jardinagem",
           },
         ],
       })
@@ -179,13 +179,7 @@ export default function PixPaymentPage() {
 
       <header className="bg-white border-b border-gray-100">
         <div className="mx-auto max-w-7xl px-4 py-3">
-          <Image
-            src="/titanchef-logo.jpg"
-            alt="TitanChef"
-            width={60}
-            height={40}
-            className="h-10 w-auto"
-          />
+          <span className="text-lg font-bold text-green-700">Jardim da Cida</span>
         </div>
       </header>
 

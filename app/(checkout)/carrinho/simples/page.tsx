@@ -3,14 +3,14 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react"
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
-import { TitanchefHeader } from "@/components/checkout/titanchef/header"
-import { TitanchefHeroBanner } from "@/components/checkout/titanchef/hero-banner"
+import { Header } from "@/components/checkout/header"
+import { HeroBanner } from "@/components/checkout/hero-banner"
 import { PersonalInfoForm } from "@/components/checkout/personal-info-form"
 import { ShippingAddressForm } from "@/components/checkout/shipping-address-form"
-import { TitanchefPaymentForm } from "@/components/checkout/titanchef/payment-form"
-import { TitanchefOrderSummary } from "@/components/checkout/titanchef/order-summary"
+import { PaymentForm } from "@/components/checkout/payment-form"
+import { OrderSummary } from "@/components/checkout/order-summary"
 import { TrustBadges } from "@/components/checkout/trust-badges"
-import { TitanchefFooter } from "@/components/checkout/titanchef/footer"
+import { Footer } from "@/components/checkout/footer"
 import { HybridTracker } from "@/components/hybrid-tracker"
 import { sendGAEvent } from "@next/third-parties/google"
 import { fetchCep } from "@/lib/cep-service"
@@ -18,11 +18,18 @@ import { PixDiscountProvider } from "@/contexts/pix-discount-context"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
+// TODO: Atualizar este preço com o valor real do cliente
 const PRODUCT_CONFIG = {
-  title: "Tábua de Titânio Titanchef - Tamanho Grande 34cm X 24cm",
-  image:
-    "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/ChatGPT%20Image%2027%20de%20ago.%20de%202025%2C%2011_04_04%20%282%29.png",
-  price: 79.9,
+  title: "Kit Rosas do Deserto (5 Unidades)",
+  image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Oferta%201.png",
+  price: 69.9,
+  id: "kit-rosas-simples",
+}
+
+const SHIPPING_COSTS: Record<string, number> = {
+  pac: 15.59,
+  jadlog: 14.98,
+  sedex: 24.98,
 }
 
 export interface PersonalInfo {
@@ -63,7 +70,7 @@ function maskCEP(value: string): string {
   return `${digits.slice(0, 5)}-${digits.slice(5)}`
 }
 
-export default function TitanchefGrandePage() {
+export default function SimplesPage() {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     email: "",
     nome: "",
@@ -157,12 +164,7 @@ export default function TitanchefGrandePage() {
   const showPayment = isPersonalInfoComplete() && isShippingComplete
 
   const totalAmount = useMemo(() => {
-    const shippingCosts: Record<string, number> = {
-      pac: 0,
-      jadlog: 14.98,
-      sedex: 24.98,
-    }
-    const shippingCost = selectedShipping ? shippingCosts[selectedShipping] || 0 : 0
+    const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] || 0 : 0
     return PRODUCT_CONFIG.price + shippingCost
   }, [selectedShipping])
 
@@ -173,7 +175,7 @@ export default function TitanchefGrandePage() {
       items: [
         {
           item_name: PRODUCT_CONFIG.title,
-          item_id: "tabua-grande-titanchef",
+          item_id: PRODUCT_CONFIG.id,
           price: PRODUCT_CONFIG.price,
         },
       ],
@@ -189,14 +191,14 @@ export default function TitanchefGrandePage() {
             value: PRODUCT_CONFIG.price,
             currency: "BRL",
             content_name: PRODUCT_CONFIG.title,
-            content_ids: ["tabua-grande-titanchef"],
+            content_ids: [PRODUCT_CONFIG.id],
             content_type: "product",
           }}
         />
-        <TitanchefHeader />
+        <Header />
 
         <main className="mx-auto max-w-7xl px-4 py-6">
-          <TitanchefHeroBanner />
+          <HeroBanner />
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
@@ -211,6 +213,7 @@ export default function TitanchefGrandePage() {
                 isLoadingCEP={isLoadingCEP}
                 cepError={cepError}
                 numeroRef={numeroRef}
+                shippingCosts={SHIPPING_COSTS}
               />
               <Elements
                 stripe={stripePromise}
@@ -226,7 +229,7 @@ export default function TitanchefGrandePage() {
                   },
                 }}
               >
-                <TitanchefPaymentForm
+                <PaymentForm
                   visible={showPayment}
                   totalAmount={totalAmount}
                   personalInfo={personalInfo}
@@ -236,18 +239,19 @@ export default function TitanchefGrandePage() {
             </div>
 
             <div className="space-y-6">
-              <TitanchefOrderSummary
+              <OrderSummary
                 selectedShipping={selectedShipping}
                 productTitle={PRODUCT_CONFIG.title}
                 productImage={PRODUCT_CONFIG.image}
                 productPrice={PRODUCT_CONFIG.price}
+                shippingCosts={SHIPPING_COSTS}
               />
               <TrustBadges />
             </div>
           </div>
         </main>
 
-        <TitanchefFooter />
+        <Footer />
       </div>
     </PixDiscountProvider>
   )

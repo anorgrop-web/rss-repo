@@ -12,8 +12,8 @@ import { sendGAEvent } from "@next/third-parties/google"
 import { usePixDiscount } from "@/contexts/pix-discount-context"
 
 const ORDER_BUMP_PRODUCT = {
-  id: "bump-churrasco",
-  name: "O Código da Carne: Manual de Cortes, Temperos e Facas",
+  id: "bump-jardinagem",
+  name: "Guia Completo de Cuidados com Rosas do Deserto",
   price: 24.9,
   originalPrice: 49.9,
   image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/Imagem%20orderbump.png",

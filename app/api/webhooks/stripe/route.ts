@@ -15,11 +15,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
-function detectBrandFromOfferId(offerId: string | undefined): "katuchef" | "titanchef" {
-  // Agora sempre retorna titanchef como marca padrão
-  return "titanchef"
-}
-
 export async function POST(request: Request) {
   const body = await request.text()
   const signature = request.headers.get("stripe-signature")
@@ -54,10 +49,6 @@ export async function POST(request: Request) {
       const addressCity = metadata.address_city
       const addressState = metadata.address_state
       const addressCep = metadata.address_cep
-      const offerId = metadata.oid
-
-      const brand = detectBrandFromOfferId(offerId)
-
       // Save order to Supabase database
       try {
         const { error: supabaseError } = await supabase.from("pedidos").insert({
@@ -102,11 +93,10 @@ export async function POST(request: Request) {
           paymentMethod,
           products: [], // Produtos removidos dos metadados
           address,
-          brand, // Identificador da marca para emails (detectado automaticamente)
         })
 
         if (emailResult.success) {
-          console.log(`Order confirmation email sent to ${customerEmail} (brand: ${brand})`)
+          console.log(`Order confirmation email sent to ${customerEmail}`)
         } else {
           console.error(`Failed to send email to ${customerEmail}:`, emailResult.error)
         }

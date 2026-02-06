@@ -1,8 +1,13 @@
 import { Resend } from "resend"
 import { OrderConfirmationEmail } from "@/components/emails/order-confirmation"
-import { TitanchefOrderConfirmationEmail } from "@/components/emails/titanchef-order-confirmation"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY environment variable is not set")
+  }
+  return new Resend(apiKey)
+}
 
 interface SendOrderConfirmationParams {
   to: string
@@ -21,7 +26,6 @@ interface SendOrderConfirmationParams {
     state: string
     cep: string
   }
-  brand?: "katuchef" | "titanchef" // Adicionado suporte para múltiplas marcas
 }
 
 export async function sendOrderConfirmation({
@@ -32,43 +36,20 @@ export async function sendOrderConfirmation({
   paymentMethod,
   products = [],
   address,
-  brand = "katuchef", // Default para katuchef
 }: SendOrderConfirmationParams) {
   try {
-    const brandConfig = {
-      katuchef: {
-        from: "TitanChef <pedidos@titanchefcut.com>",
-        subject: `Pedido Confirmado! #${orderId}`,
-        emailComponent: OrderConfirmationEmail({
-          customerName,
-          orderId,
-          amount,
-          paymentMethod,
-          products,
-          address,
-        }),
-      },
-      titanchef: {
-        from: "Titanchef <pedidos@titanchefcut.com>",
-        subject: `Pedido Confirmado! #${orderId}`,
-        emailComponent: TitanchefOrderConfirmationEmail({
-          customerName,
-          orderId,
-          amount,
-          paymentMethod,
-          products,
-          address,
-        }),
-      },
-    }
-
-    const config = brandConfig[brand]
-
-    const { data, error } = await resend.emails.send({
-      from: config.from,
+    const { data, error } = await getResend().emails.send({
+      from: "Jardim da Cida <info@jardimdacida.com>",
       to: [to],
-      subject: config.subject,
-      react: config.emailComponent,
+      subject: `Pedido Confirmado! #${orderId}`,
+      react: OrderConfirmationEmail({
+        customerName,
+        orderId,
+        amount,
+        paymentMethod,
+        products,
+        address,
+      }),
     })
 
     if (error) {

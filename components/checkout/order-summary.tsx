@@ -5,8 +5,8 @@ import { Minus, Plus, Trash2, Tag } from "lucide-react"
 import Image from "next/image"
 import { usePixDiscount } from "@/contexts/pix-discount-context"
 
-const SHIPPING_COSTS: Record<string, number> = {
-  pac: 0,
+const DEFAULT_SHIPPING_COSTS: Record<string, number> = {
+  pac: 15.59,
   jadlog: 14.98,
   sedex: 24.98,
 }
@@ -16,25 +16,28 @@ interface OrderSummaryProps {
   productTitle?: string
   productImage?: string
   productPrice?: number
+  shippingCosts?: Record<string, number>
 }
 
-const DEFAULT_PRODUCT_TITLE = "Tábua de Titânio TitanChef - Kit Completo 3 tamanhos"
+// TODO: Atualizar este preço com o valor real do cliente
+const DEFAULT_PRODUCT_TITLE = "Kit Rosas do Deserto (5 Unidades)"
 const DEFAULT_PRODUCT_IMAGE =
-  "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/Kit%20de%20T%C3%A1buas%20de%20Corte%20%282%29.png"
-const DEFAULT_PRODUCT_PRICE = 89.87
+  "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Oferta%201.png"
+const DEFAULT_PRODUCT_PRICE = 69.9
 
 export function OrderSummary({
   selectedShipping,
   productTitle = DEFAULT_PRODUCT_TITLE,
   productImage = DEFAULT_PRODUCT_IMAGE,
   productPrice = DEFAULT_PRODUCT_PRICE,
+  shippingCosts = DEFAULT_SHIPPING_COSTS,
 }: OrderSummaryProps) {
   const [quantity, setQuantity] = useState(1)
 
   const { pixDiscountApplied, discountPercentage } = usePixDiscount()
 
   const subtotal = productPrice * quantity
-  const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] : 0
+  const shippingCost = selectedShipping ? shippingCosts[selectedShipping] : 0
 
   const subtotalWithShipping = subtotal + shippingCost
   const pixDiscountAmount = pixDiscountApplied ? subtotalWithShipping * discountPercentage : 0

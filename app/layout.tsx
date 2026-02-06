@@ -14,8 +14,8 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 // Updated metadata for checkout page
 export const metadata: Metadata = {
-  title: "Checkout - TitanChef",
-  description: "Finalize sua compra de tábuas de titânio TitanChef",
+  title: "Checkout - Jardim da Cida",
+  description: "Finalize sua compra de Rosas do Deserto - Jardim da Cida",
   generator: "v0.app",
   icons: {
     icon: [
