@@ -1,7 +1,13 @@
 import { Resend } from "resend"
 import { OrderConfirmationEmail } from "@/components/emails/order-confirmation"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY environment variable is not set")
+  }
+  return new Resend(apiKey)
+}
 
 interface SendOrderConfirmationParams {
   to: string
@@ -32,7 +38,7 @@ export async function sendOrderConfirmation({
   address,
 }: SendOrderConfirmationParams) {
   try {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: "Jardim da Cida <info@jardimdacida.com>",
       to: [to],
       subject: `Pedido Confirmado! #${orderId}`,
