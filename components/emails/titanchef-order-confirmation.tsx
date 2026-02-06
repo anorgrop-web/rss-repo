@@ -47,18 +47,14 @@ export function TitanchefOrderConfirmationEmail({
   return (
     <Html>
       <Head />
-      <Preview>Seu pedido Titanchef foi confirmado! Pedido #{orderId}</Preview>
+      <Preview>Seu pedido Jardim da Cida foi confirmado! Pedido #{orderId}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Logo */}
           <Section style={logoSection}>
-            <Img
-              src="https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/titanchef-logo.png"
-              width="180"
-              height="60"
-              alt="Titanchef"
-              style={logo}
-            />
+            <Text style={{ fontSize: "24px", fontWeight: "bold", color: "#16a34a", margin: "0", textAlign: "center" as const }}>
+              Jardim da Cida
+            </Text>
           </Section>
 
           {/* Header */}
@@ -141,7 +137,7 @@ export function TitanchefOrderConfirmationEmail({
           {/* Footer */}
           <Section style={footerSection}>
             <Text style={footerText}>Se você tiver alguma dúvida sobre seu pedido, entre em contato conosco.</Text>
-            <Text style={footerText}>© {new Date().getFullYear()} Titanchef. Todos os direitos reservados.</Text>
+            <Text style={footerText}>© {new Date().getFullYear()} Jardim da Cida. Todos os direitos reservados.</Text>
           </Section>
         </Container>
       </Body>

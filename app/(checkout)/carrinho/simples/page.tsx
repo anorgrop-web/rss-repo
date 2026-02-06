@@ -18,11 +18,18 @@ import { PixDiscountProvider } from "@/contexts/pix-discount-context"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
+// TODO: Atualizar este preço com o valor real do cliente
 const PRODUCT_CONFIG = {
-  title: "Tábua de Titânio TitanChef - Tamanho pequeno 25cm X 15cm",
-  image:
-    "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/lp/modal/ChatGPT%20Image%2027%20de%20ago.%20de%202025%2C%2010_50_13%20%282%29.png",
-  price: 59.9,
+  title: "Kit Rosas do Deserto (5 Unidades)",
+  image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Oferta%201.png",
+  price: 149.9,
+  id: "kit-rosas-simples",
+}
+
+const SHIPPING_COSTS: Record<string, number> = {
+  pac: 15.59,
+  jadlog: 14.98,
+  sedex: 24.98,
 }
 
 export interface PersonalInfo {
@@ -63,7 +70,7 @@ function maskCEP(value: string): string {
   return `${digits.slice(0, 5)}-${digits.slice(5)}`
 }
 
-export default function PequenoPage() {
+export default function SimplesPage() {
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({
     email: "",
     nome: "",
@@ -157,12 +164,7 @@ export default function PequenoPage() {
   const showPayment = isPersonalInfoComplete() && isShippingComplete
 
   const totalAmount = useMemo(() => {
-    const shippingCosts: Record<string, number> = {
-      pac: 0,
-      jadlog: 14.98,
-      sedex: 24.98,
-    }
-    const shippingCost = selectedShipping ? shippingCosts[selectedShipping] || 0 : 0
+    const shippingCost = selectedShipping ? SHIPPING_COSTS[selectedShipping] || 0 : 0
     return PRODUCT_CONFIG.price + shippingCost
   }, [selectedShipping])
 
@@ -173,7 +175,7 @@ export default function PequenoPage() {
       items: [
         {
           item_name: PRODUCT_CONFIG.title,
-          item_id: "tabua-pequena",
+          item_id: PRODUCT_CONFIG.id,
           price: PRODUCT_CONFIG.price,
         },
       ],
@@ -189,7 +191,7 @@ export default function PequenoPage() {
             value: PRODUCT_CONFIG.price,
             currency: "BRL",
             content_name: PRODUCT_CONFIG.title,
-            content_ids: ["tabua-pequena"],
+            content_ids: [PRODUCT_CONFIG.id],
             content_type: "product",
           }}
         />
@@ -211,6 +213,7 @@ export default function PequenoPage() {
                 isLoadingCEP={isLoadingCEP}
                 cepError={cepError}
                 numeroRef={numeroRef}
+                shippingCosts={SHIPPING_COSTS}
               />
               <Elements
                 stripe={stripePromise}
@@ -241,6 +244,7 @@ export default function PequenoPage() {
                 productTitle={PRODUCT_CONFIG.title}
                 productImage={PRODUCT_CONFIG.image}
                 productPrice={PRODUCT_CONFIG.price}
+                shippingCosts={SHIPPING_COSTS}
               />
               <TrustBadges />
             </div>
