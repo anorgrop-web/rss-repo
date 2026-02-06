@@ -198,7 +198,7 @@ export default function DobroPage() {
         <Header />
 
         <main className="mx-auto max-w-7xl px-4 py-6">
-          <HeroBanner />
+            <HeroBanner src={PRODUCT_CONFIG.image} />
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">

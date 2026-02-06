@@ -1,11 +1,18 @@
 import Image from "next/image"
 
-export function HeroBanner() {
+const DEFAULT_BANNER = "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Oferta%201.png"
+
+interface HeroBannerProps {
+  src?: string
+  alt?: string
+}
+
+export function HeroBanner({ src = DEFAULT_BANNER, alt = "Rosas do Deserto - Jardim da Cida" }: HeroBannerProps) {
   return (
     <div className="overflow-hidden rounded-lg">
       <Image
-        src="https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/kat/imgkatucheckout.png"
-        alt="Rosas do Deserto - Jardim da Cida"
+        src={src}
+        alt={alt}
         width={1200}
         height={400}
         className="w-full h-auto object-cover"
