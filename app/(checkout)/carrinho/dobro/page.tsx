@@ -22,7 +22,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 const PRODUCT_CONFIG = {
   title: "Kit Rosas do Deserto em Dobro (10 Unidades)",
   image: "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Group%201105.png",
-  price: 249.9,
+  price: 104.9,
   id: "kit-rosas-dobro",
 }
 

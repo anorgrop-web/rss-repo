@@ -23,7 +23,7 @@ interface OrderSummaryProps {
 const DEFAULT_PRODUCT_TITLE = "Kit Rosas do Deserto (5 Unidades)"
 const DEFAULT_PRODUCT_IMAGE =
   "https://mk6n6kinhajxg1fp.public.blob.vercel-storage.com/RD/Oferta%201.png"
-const DEFAULT_PRODUCT_PRICE = 149.9
+const DEFAULT_PRODUCT_PRICE = 69.9
 
 export function OrderSummary({
   selectedShipping,

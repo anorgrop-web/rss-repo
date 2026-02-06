@@ -151,7 +151,7 @@ export default function Home() {
 
   // TODO: Atualizar este preço com o valor real do cliente
   const totalAmount = useMemo(() => {
-    const productPrice = 149.9
+    const productPrice = 69.9
     const shippingCosts: Record<string, number> = {
       pac: 15.59,
       jadlog: 14.98,
@@ -164,17 +164,17 @@ export default function Home() {
   useEffect(() => {
     sendGAEvent("event", "begin_checkout", {
       currency: "BRL",
-      value: 149.9,
+      value: 69.9,
       items: [
         {
           item_name: "Kit Rosas do Deserto (5 Unidades)",
           item_id: "kit-rosas-simples",
-          price: 149.9,
+          price: 69.9,
         },
       ],
     })
     fbEvents("InitiateCheckout", {
-      value: 149.9,
+      value: 69.9,
       currency: "BRL",
       content_name: "Kit Rosas do Deserto (5 Unidades)",
       content_ids: ["kit-rosas-simples"],
@@ -188,7 +188,7 @@ export default function Home() {
         <HybridTracker
           event="InitiateCheckout"
           data={{
-            value: 149.9,
+            value: 69.9,
             currency: "BRL",
             content_name: "Kit Rosas do Deserto (5 Unidades)",
             content_ids: ["kit-rosas-simples"],
